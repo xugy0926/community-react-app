@@ -1,0 +1,4 @@
+node_modules
+dist
+production.js
+test.js

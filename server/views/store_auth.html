@@ -1,0 +1,14 @@
+<div>
+  <p>Saving your GitHub session...</p>
+</div>
+<script type="text/javascript">
+  Parse.User.become('<%= sessionToken %>')
+    .then((user) => {
+      console.log(user)
+      // window.location.href='/';
+    })
+    .then((error) => {
+      console.log(error)
+      // window.location.href='/';
+    })
+</script>
