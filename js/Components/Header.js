@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
-import BackSpaceIcon from '@material-ui/icons/BackSpace'
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 
 const styles = theme => ({
   container: {
@@ -23,7 +23,7 @@ const styles = theme => ({
 const Left = ({ onBack }) => {
   return onBack ? (
     <IconButton color="inherit" aria-label="Back" onClick={onBack}>
-      <BackSpaceIcon />
+      <KeyboardArrowLeftIcon />
     </IconButton>
   ) : (
     <React.Fragment />

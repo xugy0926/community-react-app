@@ -12,7 +12,8 @@ import { header, footer } from './redux/selectors'
 const styles = theme => ({
   main: {
     marginTop: 70,
-    marginBottom: 63
+    marginBottom: 63,
+    width: '100%',
   }
 })
 
@@ -25,8 +26,8 @@ const App = ({ classes, header, footer, boundUpdateAccount, children }) => {
     <React.Fragment>
       <Header title={title} onBack={onBack} onSave={onSave} />
       <Grid container direction="row" justify="center" alignItems="center">
-        <Grid item sm={6}>
-          <div className={classes.main}>{children}</div>
+        <Grid item sm={6} className={classes.main}>
+          <div>{children}</div>
         </Grid>
       </Grid>
       <Footer onAdd={onAdd} onMy={onMy} />

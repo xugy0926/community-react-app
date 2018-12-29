@@ -40,7 +40,7 @@ const Footer = ({ classes, currentUserName, footer }) => {
       <Toolbar className={classes.toolbar}>
         {onFavorite ? (
           <IconButton color="inherit" aria-label="Open drawer">
-            <FavoriteIcon onClick={onFavorite}/>
+            <FavoriteIcon onClick={onFavorite} />
           </IconButton>
         ) : (
           <div />
@@ -52,9 +52,13 @@ const Footer = ({ classes, currentUserName, footer }) => {
         ) : (
           <React.Fragment />
         )}
-        <IconButton color="inherit" onClick={onMy}>
-          <UserAvatar char={currentUserName.substr(0, 1)} />
-        </IconButton>
+        {onMy ? (
+          <IconButton color="inherit" onClick={onMy}>
+            <UserAvatar char={currentUserName.substr(0, 1)} />
+          </IconButton>
+        ) : (
+          <React.Fragment />
+        )}
       </Toolbar>
     </AppBar>
   )
