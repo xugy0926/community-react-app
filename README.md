@@ -7,7 +7,8 @@ npm start
 ```
 
 ```BASH
-npm run build
+npm run build-dev
+npm run build-pro
 ```
 
 #### server
@@ -15,11 +16,5 @@ npm run build
 ```
 cd ./server
 yarn
-pm2 startOrRestart app.js --env production
-```
-
-#### app
-
-```
-npm run build
+NODE_ENV=production pm2 start app.js
 ```

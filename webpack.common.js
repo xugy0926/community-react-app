@@ -1,12 +1,12 @@
 const path = require('path')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
     main: './js/setup.js',
     token: './js/token.js'
   },
-  mode: 'production',
   module: {
     rules: [
       {
@@ -25,13 +25,20 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist/'),
     publicPath: '/dist/',
-    filename: '[name].js'
+    filename: '[name].js',
+    chunkFilename: '[name].js'
   },
-  devServer: {
-    contentBase: path.join(__dirname, 'public/'),
-    port: 3000,
-    publicPath: 'http://localhost:3000/dist/',
-    hotOnly: true
-  },
-  plugins: [new webpack.HotModuleReplacementPlugin()]
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin([
+      {
+        from: './public/index.html',
+        to: './'
+      },
+      {
+        from: './public/token.html',
+        to: './'
+      }
+    ])
+  ]
 }

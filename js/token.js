@@ -1,3 +1,4 @@
+import Parse from 'parse'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Route } from 'react-router-dom'
@@ -12,7 +13,7 @@ class Token extends React.Component {
     Parse.initialize(parse.appId, parse.javascriptKey)
     Parse.serverURL = parse.serverURL
     Parse.User.become(session).then(() => {
-      window.location.href = clientURL
+      window.location.href = config.clientURL
     })
   }
   render() {
