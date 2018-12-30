@@ -15,8 +15,16 @@ import store from './redux/store'
 
 import { parse } from './config'
 
+const sessionKey = 'community-app-session'
+
+const session = window.localStorage.getItem(sessionKey)
 Parse.initialize(parse.appId, parse.javascriptKey)
 Parse.serverURL = parse.serverURL
+
+session &&
+  Parse.User.become(session).then(() => {
+    window.localStorage.removeItem(sessionKey)
+  })
 
 const options = {
   position: 'bottom center',

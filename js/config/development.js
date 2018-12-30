@@ -8,6 +8,6 @@ module.exports = {
   github: {
     authURI: 'https://github.com/login/oauth/authorize',
     clientId: '9d2e19a0e3e5526991db',
-    redirectURI: 'http://d9ad1a54.ngrok.io/github/callback'
+    redirectURI: 'http://85d6ba56.ngrok.io/github/callback'
   }
 }

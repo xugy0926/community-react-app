@@ -13,7 +13,7 @@ const styles = theme => ({
   main: {
     marginTop: 70,
     marginBottom: 63,
-    width: '100%',
+    width: '100%'
   }
 })
 
@@ -27,7 +27,7 @@ const App = ({ classes, header, footer, boundUpdateAccount, children }) => {
       <Header title={title} onBack={onBack} onSave={onSave} />
       <Grid container direction="row" justify="center" alignItems="center">
         <Grid item sm={6} className={classes.main}>
-          <div>{children}</div>
+          <React.Fragment>{children}</React.Fragment>
         </Grid>
       </Grid>
       <Footer onAdd={onAdd} onMy={onMy} />

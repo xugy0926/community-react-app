@@ -4,8 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    main: './js/setup.js',
-    token: './js/token.js'
+    main: './js/setup.js'
   },
   module: {
     rules: [
