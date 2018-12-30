@@ -37,6 +37,10 @@ module.exports = {
       {
         from: './public/token.html',
         to: './'
+      },
+      {
+        from: './public/post.html',
+        to: './'
       }
     ])
   ]

@@ -1,3 +1,4 @@
+import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
@@ -28,9 +29,27 @@ const styles = {
   }
 }
 
+const query = new Parse.Query(Parse.Object.extend('Post'))
+
 class Post extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      post: this.props.post
+    }
+
+    const { postId } = this.props
+    if (!this.state.post) {
+      query.equalTo('objectId', postId)
+      query.first().then(item => {
+        this.setState({ post: item })
+      })
+    }
+  }
+
   onEdit = () => {
-    const { history, login, post } = this.props
+    const { history, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -41,7 +60,8 @@ class Post extends React.Component {
   }
 
   onDelete = () => {
-    const { history, alert, login, post } = this.props
+    const { history, alert, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -59,7 +79,8 @@ class Post extends React.Component {
   }
 
   onComment = () => {
-    const { history, alert, login, post } = this.props
+    const { history, alert, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -115,7 +136,9 @@ class Post extends React.Component {
   }
 
   render() {
-    const { classes, history, boundUpdateHader, boundUpdateFooter, post } = this.props
+    const { classes, history, boundUpdateHader, boundUpdateFooter, postId } = this.props
+    const { post } = this.state
+
     boundUpdateHader({ onBack: () => history.goBack() })
     boundUpdateFooter({ onAdd: () => this.onComment() })
 

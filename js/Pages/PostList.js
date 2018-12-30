@@ -29,7 +29,18 @@ query.limit(30)
 query.descending('createdAt')
 
 class PostList extends React.Component {
-  state = { snippet: false }
+  constructor(props) {
+    super(props)
+    this.state = { snippet: false }
+
+    const query = window.location.search
+    const arr = query.split('&')
+    const postId = arr[0].substr(4)
+
+    if (postId) {
+      this.props.history.push('/post/' + postId)
+    }
+  }
 
   handleClose = () => {
     this.setState({ snippet: false })

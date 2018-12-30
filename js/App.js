@@ -19,7 +19,6 @@ const styles = theme => ({
 
 const App = ({ classes, header, footer, boundUpdateAccount, children }) => {
   boundUpdateAccount(Parse.User.current())
-
   const { title, onBack, onSave } = header
   const { onAdd, onMy } = footer
   return (

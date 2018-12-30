@@ -1,0 +1,19 @@
+<!-- sourced from https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,
+      shrink-to-fit=no">
+    <title>JavaScript 社区</title>
+  </head>
+
+  <body>
+    <div>重定向..</div>
+    <script>
+    const query = window.location.search
+    const arr = query.split('&')
+    window.location.href = `/` + arr[0] 
+  </script>
+  </body>
+</html>
