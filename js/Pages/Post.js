@@ -139,7 +139,7 @@ class Post extends React.Component {
     const { classes, history, boundUpdateHader, boundUpdateFooter, postId } = this.props
     const { post } = this.state
 
-    boundUpdateHader({ onBack: () => history.goBack() })
+    boundUpdateHader({ onBack: () => history.push('/') })
     boundUpdateFooter({ onAdd: () => this.onComment() })
 
     const media = this.mediaComp(post && post.get('media'))
