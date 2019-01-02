@@ -12,7 +12,9 @@ import ReplyIcon from '@material-ui/icons/Reply'
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
 
-import marked from 'marked'
+import ReactMarkdown from 'react-markdown'
+
+import CodeBlock from '../Components/CodeBlock'
 
 const styles = theme => ({
   card: {
@@ -52,7 +54,7 @@ const CommentItem = ({ classes, item, login, currentUserId, onReply, onEdit, onD
         subheader={authorName}
       />
       <CardContent>
-        <div className="markdown-body" dangerouslySetInnerHTML={{ __html: marked(content) }} />
+        <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
       </CardContent>
       <CardActions className={classes.actions} disableActionSpacing>
         {login ? (

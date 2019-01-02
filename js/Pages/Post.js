@@ -9,9 +9,10 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import CardMedia from '@material-ui/core/CardMedia'
 import Typography from '@material-ui/core/Typography'
-import marked from 'marked'
+import ReactMarkdown from 'react-markdown'
 
 import CommentList from '../Components/CommentList'
+import CodeBlock from '../Components/CodeBlock'
 
 import { login, currentUserId, currentUser, onePost } from '../redux/selectors'
 import { updateHeader, updateFooter } from '../redux/actions'
@@ -96,9 +97,7 @@ class Post extends React.Component {
 
   descriptionComp(content) {
     return content ? (
-      <div className="markdown-body">
-        <div dangerouslySetInnerHTML={{ __html: marked(content) }} />
-      </div>
+      <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
     ) : (
       <React.Fragment />
     )
@@ -110,11 +109,9 @@ class Post extends React.Component {
 
   contentComp(content) {
     return content ? (
-      <div className="markdown-body">
-        <div dangerouslySetInnerHTML={{ __html: marked(content) }} />
-      </div>
+      <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
     ) : (
-      <div />
+      <React.Fragment />
     )
   }
 

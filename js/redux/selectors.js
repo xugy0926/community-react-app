@@ -10,4 +10,4 @@ export const more = store => store.posts.more
 export const keyWord = store => store.posts.keyWord
 export const posts = store => store.posts.posts
 export const postsCount = store => store.posts.posts.length
-export const onePost = (store, id) => R.find(R.propEq('id', id))(store.posts.posts)
+export const onePost = (store, id) => R.find(R.propEq('id', id), store.posts.posts)

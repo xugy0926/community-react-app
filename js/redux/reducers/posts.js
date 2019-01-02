@@ -19,7 +19,8 @@ export default function(state = initialState, action) {
       const has = R.find(R.propEq('id', post.id), state.posts) ? true : false
 
       if (has) {
-        return state.posts.map(oldPost => (oldPost.id === post.id ? post : oldPost))
+        const newPosts = state.posts.map(oldPost => (oldPost.id === post.id ? post : oldPost))
+        return Object.assign({}, state, { posts: [...newPosts] })
       } else {
         return Object.assign({}, state, { posts: [...state.posts] })
       }
