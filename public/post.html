@@ -9,11 +9,11 @@
   </head>
 
   <body>
-    <div>重定向..</div>
+    <div>跳转..</div>
     <script>
-    const query = window.location.search
-    const arr = query.split('&')
-    window.location.href = `/` + arr[0] 
+    const path = window.location.pathname
+    const arr = query.split('/')
+    window.location.href = `/` + arr[2]
   </script>
   </body>
 </html>
