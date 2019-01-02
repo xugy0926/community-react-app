@@ -19,17 +19,16 @@ const styles = theme => ({
 
 const App = ({ classes, header, footer, boundUpdateAccount, children }) => {
   boundUpdateAccount(Parse.User.current())
-  const { title, onBack, onSave } = header
-  const { onAdd, onMy } = footer
+
   return (
     <React.Fragment>
-      <Header title={title} onBack={onBack} onSave={onSave} />
+      <Header {...header} />
       <Grid container direction="row" justify="center" alignItems="center">
         <Grid item sm={6} className={classes.main}>
           <React.Fragment>{children}</React.Fragment>
         </Grid>
       </Grid>
-      <Footer onAdd={onAdd} onMy={onMy} />
+      <Footer {...footer} />
     </React.Fragment>
   )
 }

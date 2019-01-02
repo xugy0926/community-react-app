@@ -4,15 +4,15 @@ const initialState = {
   header: {
     title: '',
     onBack: null,
-    onSave: null
+    onSave: null,
+    onSearch: null
   },
   footer: {
     onFavorite: null,
     onAdd: null,
     onMy: null
   },
-  user: null,
-  more: true
+  user: null
 }
 
 export default function(state = initialState, action) {
@@ -36,10 +36,6 @@ export default function(state = initialState, action) {
     case UPDATE_CURRENT_USER: {
       const { user } = action.payload
       return Object.assign({}, state, { user })
-    }
-    case UPDATE_MORE: {
-      const { more } = action.payload
-      return Object.assign({}, state, { more })
     }
     default:
       return state

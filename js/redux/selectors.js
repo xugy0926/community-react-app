@@ -6,7 +6,8 @@ export const currentUser = store => (store.app.user ? store.app.user : null)
 export const currentUserId = store => (store.app.user ? store.app.user.id : '')
 export const currentUserName = store => (store.app.user ? store.app.user.get('username') : '')
 export const currentUserEmail = store => (store.app.user ? store.app.user.get('email') : '')
-export const more = store => store.app.more
-export const posts = store => store.posts
-export const postsCount = store => store.posts.length
-export const onePost = (store, id) => R.find(R.propEq('id', id))(store.posts)
+export const more = store => store.posts.more
+export const keyWord = store => store.posts.keyWord
+export const posts = store => store.posts.posts
+export const postsCount = store => store.posts.posts.length
+export const onePost = (store, id) => R.find(R.propEq('id', id))(store.posts.posts)

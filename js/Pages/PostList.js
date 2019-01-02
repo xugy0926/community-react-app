@@ -14,8 +14,8 @@ import ListItemText from '@material-ui/core/ListItemText'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { currentUserName, login, more, posts, postsCount } from '../redux/selectors'
-import { updateHeader, updateFooter, updateMore, loadPosts } from '../redux/actions'
+import { currentUserName, login, more, keyWord, posts, postsCount } from '../redux/selectors'
+import { updateHeader, updateFooter, updateMore, loadPosts, updateKeyWord } from '../redux/actions'
 
 const styles = theme => ({
   load: {
@@ -63,9 +63,17 @@ class PostList extends React.Component {
     this.setState({ snippet: true })
   }
 
+  onSearch = e => {
+    const { boundUpdateKeyWord } = this.props
+    if (e.keyCode === 13) {
+      boundUpdateKeyWord(event.target.value)
+    }
+  }
+
   loadMore = () => {
-    const { boundLoadPosts, boundUpdateMore, postsCount } = this.props
+    const { boundLoadPosts, boundUpdateMore, postsCount, keyWord } = this.props
     query.skip(postsCount)
+    query.matches('title', keyWord)
     query.find().then(results => {
       if (results.length < 1) {
         boundUpdateMore(false)
@@ -82,7 +90,7 @@ class PostList extends React.Component {
 
   render() {
     const { classes, boundUpdateHeader, boundUpdateFooter, posts, more } = this.props
-    boundUpdateHeader({ title: '全部文章' })
+    boundUpdateHeader({ title: '全部文章', onSearch: e => this.onSearch(e) })
     boundUpdateFooter({
       onFavorite: () => this.onFavorite(),
       onAdd: () => this.onAdd(),
@@ -133,12 +141,14 @@ export default connect(
       currentUserName: currentUserName(state),
       login: login(state),
       more: more(state),
+      keyWord: keyWord(state),
       posts: posts(state),
       postsCount: postsCount(state)
     }
   },
   dispatch => {
     return {
+      boundUpdateKeyWord: content => dispatch(updateKeyWord(content)),
       boundUpdateHeader: header => dispatch(updateHeader(header)),
       boundUpdateFooter: footer => dispatch(updateFooter(footer)),
       boundUpdateMore: more => dispatch(updateMore(more)),

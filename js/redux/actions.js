@@ -3,6 +3,7 @@ import {
   UPDATE_FOOTER,
   UPDATE_CURRENT_USER,
   UPDATE_MORE,
+  UPDATE_KEY_WORD,
   UPDATE_POST,
   LOAD_POSTS
 } from './actionTypes'
@@ -42,5 +43,12 @@ export const updatePost = post => ({
   type: UPDATE_POST,
   payload: {
     post
+  }
+})
+
+export const updateKeyWord = keyWord => ({
+  type: UPDATE_KEY_WORD,
+  payload: {
+    keyWord
   }
 })
