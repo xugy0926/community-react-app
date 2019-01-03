@@ -23,6 +23,12 @@ const styles = {
   media: {
     height: 140
   },
+  author: {
+    color: '#757575'
+  },
+  content: {
+    marginTop: 30
+  },
   commentbtn: {
     marginTop: 10,
     marginLeft: 'auto',
@@ -153,9 +159,12 @@ class Post extends React.Component {
             <Typography gutterBottom variant="h4" component="h4">
               {post.get('title')}
             </Typography>
-            {description}
-            {recommandUrl}
-            {content}
+            <div className={classes.author}>{post.get('authorName')}</div>
+            <div className={classes.content}>
+              {description}
+              {recommandUrl}
+              {content}
+            </div>
           </CardContent>
           {editComp}
         </Card>

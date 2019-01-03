@@ -29,7 +29,6 @@ const styles = theme => ({
       backgroundColor: fade(theme.palette.common.white, 0.25)
     },
     marginLeft: 0,
-    width: '100%',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing.unit,
       width: 'auto'
@@ -46,7 +45,6 @@ const styles = theme => ({
   },
   inputRoot: {
     color: 'inherit',
-    width: '100%'
   },
   inputInput: {
     paddingTop: theme.spacing.unit,
@@ -121,7 +119,6 @@ const Header = props => {
       <Toolbar>
         {Left(props)}
         {Title(props)}
-        <div className={classes.grow} />
         {Right(props)}
         {Search(props)}
       </Toolbar>
