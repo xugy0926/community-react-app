@@ -27,10 +27,11 @@ session &&
   })
 
 const options = {
-  position: 'bottom center',
+  position: 'top center',
   timeout: 5000,
   offset: '30px',
-  transition: 'scale'
+  transition: 'scale',
+  zIndex: 10000
 }
 
 const Root = () => {

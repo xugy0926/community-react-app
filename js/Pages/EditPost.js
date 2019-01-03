@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
+import { withAlert } from 'react-alert'
 
 import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
 import { updateHeader, updatePost } from '../redux/actions'
@@ -12,7 +13,6 @@ const Post = Parse.Object.extend('Post')
 
 const styles = theme => ({
   container: {
-    marginTop: 100,
     display: 'flex',
     flexWrap: 'wrap'
   },
@@ -57,15 +57,23 @@ class EditPost extends React.Component {
       post.setACL(roleACL)
     }
 
+    if (!title || title.length < 4) {
+      alert.show('标题最少 4 个字')
+      return
+    }
+
+    if (!content || content.length < 10) {
+      alert.show('内容最少 10 个字')
+      return
+    }
+
     post
       .save()
       .then(result => {
         boundUpdatePost(result)
         history.goBack()
       })
-      .catch(err => {
-        alert.show(err.message)
-      })
+      .catch(err => alert.show(err.message))
   }
 
   titleChange = event => {
@@ -136,4 +144,4 @@ export default connect(
       boundUpdatePost: post => dispatch(updatePost(post))
     }
   }
-)(withStyles(styles)(EditPost))
+)(withStyles(styles)(withAlert(EditPost)))

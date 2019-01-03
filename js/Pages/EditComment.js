@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import { withAlert } from 'react-alert'
 
 import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
 import { updateHeader } from '../redux/actions'
@@ -13,7 +14,6 @@ const Comment = Parse.Object.extend('Comment')
 
 const styles = theme => ({
   container: {
-    marginTop: 100,
     display: 'flex',
     flexWrap: 'wrap'
   },
@@ -53,8 +53,13 @@ class EditComment extends React.Component {
   }
 
   onSave = () => {
-    const { history, currentUser, currentUserName, post } = this.props
+    const { history, currentUser, currentUserName, post, alert } = this.props
     const { content } = this.state
+
+    if (!content || content.length < 3) {
+      alert.show('内容最少 3 个字')
+      return
+    }
 
     const comment = this.comment || new Comment()
     comment.set({
@@ -71,9 +76,12 @@ class EditComment extends React.Component {
       comment.setACL(roleACL)
     }
 
-    comment.save().then(() => {
-      history.goBack()
-    })
+    comment
+      .save()
+      .then(() => {
+        history.goBack()
+      })
+      .catch(err => alert.show(err.message))
   }
 
   contentChange = event => {
@@ -133,4 +141,4 @@ export default connect(
       boundUpdateHader: header => dispatch(updateHeader(header))
     }
   }
-)(withStyles(styles)(EditComment))
+)(withStyles(styles)(withAlert(EditComment)))

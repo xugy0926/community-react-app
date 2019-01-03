@@ -13,9 +13,17 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import InfiniteScroll from 'react-infinite-scroller'
+import { withAlert } from 'react-alert'
 
 import { currentUserName, login, more, keyWord, posts, postsCount } from '../redux/selectors'
-import { updateHeader, updateFooter, updateMore, loadPosts, updateKeyWord } from '../redux/actions'
+import {
+  updateAccount,
+  updateHeader,
+  updateFooter,
+  updateMore,
+  loadPosts,
+  updateKeyWord
+} from '../redux/actions'
 
 const styles = theme => ({
   load: {
@@ -71,17 +79,34 @@ class PostList extends React.Component {
   }
 
   loadMore = () => {
-    const { boundLoadPosts, boundUpdateMore, postsCount, keyWord } = this.props
+    const {
+      boundUpdateAccount,
+      boundLoadPosts,
+      boundUpdateMore,
+      postsCount,
+      keyWord,
+      alert
+    } = this.props
     query.skip(postsCount)
     query.matches('title', keyWord)
-    query.find().then(results => {
-      if (results.length < 1) {
-        boundUpdateMore(false)
-        return
-      }
+    query
+      .find()
+      .then(results => {
+        if (results.length < 1) {
+          boundUpdateMore(false)
+          return
+        }
 
-      boundLoadPosts(results)
-    })
+        boundLoadPosts(results)
+      })
+      .catch(err => {
+        const { code, messge } = err
+        if (code && code === Parse.Error.INVALID_SESSION_TOKEN) {
+          Parse.User.logOut()
+          boundUpdateAccount(null)
+          alert.show('登录已过期，请重新登录')
+        }
+      })
   }
 
   onListItem = item => {
@@ -148,6 +173,7 @@ export default connect(
   },
   dispatch => {
     return {
+      boundUpdateAccount: user => dispatch(updateAccount(user)),
       boundUpdateKeyWord: content => dispatch(updateKeyWord(content)),
       boundUpdateHeader: header => dispatch(updateHeader(header)),
       boundUpdateFooter: footer => dispatch(updateFooter(footer)),
@@ -155,4 +181,4 @@ export default connect(
       boundLoadPosts: posts => dispatch(loadPosts(posts))
     }
   }
-)(withStyles(styles)(PostList))
+)(withStyles(styles)(withAlert(PostList)))
