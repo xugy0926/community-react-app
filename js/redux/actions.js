@@ -5,6 +5,7 @@ import {
   UPDATE_MORE,
   UPDATE_KEY_WORD,
   UPDATE_POST,
+  UPDATE_LOADING,
   LOAD_POSTS
 } from './actionTypes'
 
@@ -50,5 +51,12 @@ export const updateKeyWord = keyWord => ({
   type: UPDATE_KEY_WORD,
   payload: {
     keyWord
+  }
+})
+
+export const updateLoading = loading => ({
+  type: UPDATE_LOADING,
+  payload: {
+    loading
   }
 })

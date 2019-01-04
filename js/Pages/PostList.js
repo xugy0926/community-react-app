@@ -15,14 +15,23 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import InfiniteScroll from 'react-infinite-scroller'
 import { withAlert } from 'react-alert'
 
-import { currentUserName, login, more, keyWord, posts, postsCount } from '../redux/selectors'
+import {
+  currentUserName,
+  login,
+  more,
+  keyWord,
+  posts,
+  postsCount,
+  loading
+} from '../redux/selectors'
 import {
   updateAccount,
   updateHeader,
   updateFooter,
   updateMore,
   loadPosts,
-  updateKeyWord
+  updateKeyWord,
+  updateLoading
 } from '../redux/actions'
 
 const styles = theme => ({
@@ -83,28 +92,40 @@ class PostList extends React.Component {
       boundUpdateAccount,
       boundLoadPosts,
       boundUpdateMore,
+      boundUpdateLoading,
       postsCount,
       keyWord,
+      loading,
       alert
     } = this.props
+
+    if (loading) {
+      return
+    }
+
+    boundUpdateLoading(true)
+
     query.skip(postsCount)
     query.matches('title', keyWord)
     query
       .find()
       .then(results => {
+        boundLoadPosts(results)
+        boundUpdateLoading(false)
         if (results.length < 1) {
           boundUpdateMore(false)
           return
         }
-
-        boundLoadPosts(results)
       })
       .catch(err => {
+        boundUpdateLoading(false)
         const { code, messge } = err
         if (code && code === Parse.Error.INVALID_SESSION_TOKEN) {
           Parse.User.logOut()
           boundUpdateAccount(null)
           alert.show('登录已过期，请重新登录')
+        } else {
+          alert.show(messge)
         }
       })
   }
@@ -168,7 +189,8 @@ export default connect(
       more: more(state),
       keyWord: keyWord(state),
       posts: posts(state),
-      postsCount: postsCount(state)
+      postsCount: postsCount(state),
+      loading: loading(state)
     }
   },
   dispatch => {
@@ -178,7 +200,8 @@ export default connect(
       boundUpdateHeader: header => dispatch(updateHeader(header)),
       boundUpdateFooter: footer => dispatch(updateFooter(footer)),
       boundUpdateMore: more => dispatch(updateMore(more)),
-      boundLoadPosts: posts => dispatch(loadPosts(posts))
+      boundLoadPosts: posts => dispatch(loadPosts(posts)),
+      boundUpdateLoading: loading => dispatch(updateLoading(loading))
     }
   }
 )(withStyles(styles)(withAlert(PostList)))

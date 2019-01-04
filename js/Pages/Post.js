@@ -115,7 +115,7 @@ class Post extends React.Component {
 
   contentComp(content) {
     return content ? (
-      <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
+      <ReactMarkdown className="markdown-body" skipHtml={true} source={content} renderers={{ code: CodeBlock }} />
     ) : (
       <React.Fragment />
     )

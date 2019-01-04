@@ -54,7 +54,7 @@ const CommentItem = ({ classes, item, login, currentUserId, onReply, onEdit, onD
         subheader={authorName}
       />
       <CardContent>
-        <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
+        <ReactMarkdown className="markdown-body" skipHtml={true} source={content} renderers={{ code: CodeBlock }} />
       </CardContent>
       <CardActions className={classes.actions} disableActionSpacing>
         {login ? (

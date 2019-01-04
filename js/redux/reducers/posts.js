@@ -1,11 +1,18 @@
-import { LOAD_POSTS, UPDATE_POST, UPDATE_MORE, UPDATE_KEY_WORD } from '../actionTypes'
+import {
+  LOAD_POSTS,
+  UPDATE_POST,
+  UPDATE_MORE,
+  UPDATE_KEY_WORD,
+  UPDATE_LOADING
+} from '../actionTypes'
 
 const R = require('ramda')
 
 const initialState = {
   posts: [],
   more: true,
-  keyWord: ''
+  keyWord: '',
+  loading: false
 }
 
 export default function(state = initialState, action) {
@@ -32,6 +39,10 @@ export default function(state = initialState, action) {
     case UPDATE_KEY_WORD: {
       const { keyWord } = action.payload
       return Object.assign({}, initialState, { keyWord })
+    }
+    case UPDATE_LOADING: {
+      const { loading } = action.payload
+      return Object.assign({}, state, { loading })
     }
     default:
       return state

@@ -6,6 +6,7 @@ export const currentUser = store => (store.app.user ? store.app.user : null)
 export const currentUserId = store => (store.app.user ? store.app.user.id : '')
 export const currentUserName = store => (store.app.user ? store.app.user.get('username') : '')
 export const currentUserEmail = store => (store.app.user ? store.app.user.get('email') : '')
+export const loading = store => store.posts.loading
 export const more = store => store.posts.more
 export const keyWord = store => store.posts.keyWord
 export const posts = store => store.posts.posts

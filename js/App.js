@@ -24,7 +24,7 @@ const App = ({ classes, header, footer, boundUpdateAccount, children }) => {
     <React.Fragment>
       <Header {...header} />
       <Grid container direction="row" justify="center" alignItems="center">
-        <Grid item xm={6} className={classes.main}>
+        <Grid item sm={6} className={classes.main}>
           <React.Fragment>{children}</React.Fragment>
         </Grid>
       </Grid>
