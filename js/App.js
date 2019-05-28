@@ -31,7 +31,7 @@ class App extends React.Component {
     boundUpdateAccount(Parse.User.current())
 
     return (
-      <Col span={12} offset={6} style={styles.root}>
+      <Col xs={24} sm={24} md={24} lg={{ span: 12, offset: 6 }} style={styles.root}>
         <Header {...header} />
         <Layout.Content style={styles.main}>{children}</Layout.Content>
         <Footer {...footer} />

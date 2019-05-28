@@ -4,7 +4,7 @@ import { Affix, Layout } from 'antd'
 const Footer = () => (
   <Affix offsetBottom={0} style={{ marginTop: '20px' }}>
     <Layout.Footer style={{ textAlign: 'center' }}>
-      Ant Design ©2019 Created by XuGaoYang
+      Javascript ©2019 Created by XuGaoYang
     </Layout.Footer>
   </Affix>
 )
