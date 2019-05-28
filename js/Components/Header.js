@@ -1,133 +1,37 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
-import InputBase from '@material-ui/core/InputBase'
-import { fade } from '@material-ui/core/styles/colorManipulator'
-import SearchIcon from '@material-ui/icons/Search'
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
+import { Affix, PageHeader, Icon } from 'antd'
 
-const styles = theme => ({
-  container: {
-    position: 'fixed',
-    top: 0,
-    bottom: 'auto',
-    marginBottom: 50
-  },
-  grow: {
-    flex: 1
-  },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25)
-    },
-    marginLeft: 0,
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing.unit,
-      width: 'auto'
-    }
-  },
-  searchIcon: {
-    width: theme.spacing.unit * 9,
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    paddingTop: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 10,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 120,
-      '&:focus': {
-        width: 200
-      }
-    }
+const styles = {
+  main: {
+    boxShadow: '0 2px 8px #f0f1f2'
   }
-})
-
-const Left = ({ onBack }) => {
-  return onBack ? (
-    <IconButton color="inherit" aria-label="Back" onClick={onBack}>
-      <KeyboardArrowLeftIcon />
-    </IconButton>
-  ) : (
-    <React.Fragment />
-  )
 }
 
-const Right = ({ onSave }) => {
-  return onSave ? (
-    <Button color="inherit" onClick={onSave}>
-      保存
-    </Button>
-  ) : (
-    <React.Fragment />
-  )
+class Header extends React.Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    onBack: PropTypes.func,
+    onAdd: PropTypes.func
+  }
+
+  static defaultProps = {
+    onBack: () => {},
+    onAdd: () => {}
+  }
+
+  render() {
+    return (
+      <Affix offsetTop={0} style={{ marginBottom: '20px' }}>
+        <PageHeader
+          style={styles.main}
+          onBack={() => this.props.onBack()}
+          title={this.props.title}
+          extra={this.props.onAdd ? <Icon type="plus" onClick={() => this.props.onAdd()} /> : null}
+        />
+      </Affix>
+    )
+  }
 }
 
-const Search = ({ onSearch, classes }) => {
-  return onSearch ? (
-    <div className={classes.search}>
-      <div className={classes.searchIcon}>
-        <SearchIcon />
-      </div>
-      <InputBase
-        onKeyDown={onSearch}
-        classes={{
-          root: classes.inputRoot,
-          input: classes.inputInput
-        }}
-      />
-    </div>
-  ) : (
-    <React.Fragment />
-  )
-}
-
-const Title = ({ classes, title }) => {
-  return title ? (
-    <Typography variant="h6" color="inherit" className={classes.grow}>
-      {title}
-    </Typography>
-  ) : (
-    <React.Fragment />
-  )
-}
-
-const Header = props => {
-  const { classes } = props
-
-  return (
-    <AppBar className={classes.container}>
-      <Toolbar>
-        {Left(props)}
-        {Title(props)}
-        {Right(props)}
-        {Search(props)}
-      </Toolbar>
-    </AppBar>
-  )
-}
-
-Header.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
-export default withStyles(styles)(Header)
+export default Header

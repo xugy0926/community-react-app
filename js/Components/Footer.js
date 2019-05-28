@@ -1,73 +1,12 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import IconButton from '@material-ui/core/IconButton'
-import Fab from '@material-ui/core/Fab'
-import FavoriteIcon from '@material-ui/icons/Favorite'
-import AddIcon from '@material-ui/icons/Add'
-import UserAvatar from '../Components/UserAvatar'
+import { Affix, Layout } from 'antd'
 
-import { currentUserName, login, footer } from '../redux/selectors'
+const Footer = () => (
+  <Affix offsetBottom={0} style={{ marginTop: '20px' }}>
+    <Layout.Footer style={{ textAlign: 'center' }}>
+      Ant Design ©2019 Created by XuGaoYang
+    </Layout.Footer>
+  </Affix>
+)
 
-const styles = theme => ({
-  container: {
-    position: 'fixed',
-    top: 'auto',
-    bottom: 0
-  },
-  toolbar: {
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  fabButton: {
-    position: 'absolute',
-    zIndex: 1,
-    top: -30,
-    left: 0,
-    right: 0,
-    margin: '0 auto'
-  }
-})
-
-const Footer = ({ classes, currentUserName, footer }) => {
-  const { onAdd, onMy, onFavorite } = footer
-
-  return (
-    <AppBar color="primary" className={classes.container}>
-      <Toolbar className={classes.toolbar}>
-        {onFavorite ? (
-          <IconButton color="inherit" aria-label="Open drawer">
-            <FavoriteIcon onClick={onFavorite} />
-          </IconButton>
-        ) : (
-          <div />
-        )}
-        {onAdd ? (
-          <Fab color="secondary" aria-label="Add" className={classes.fabButton}>
-            <AddIcon onClick={onAdd} />
-          </Fab>
-        ) : (
-          <React.Fragment />
-        )}
-        {onMy ? (
-          <IconButton color="inherit" onClick={onMy}>
-            <UserAvatar char={currentUserName.substr(0, 1)} />
-          </IconButton>
-        ) : (
-          <React.Fragment />
-        )}
-      </Toolbar>
-    </AppBar>
-  )
-}
-
-Footer.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
-export default connect(state => {
-  return { currentUserName: currentUserName(state), login: login(state), footer: footer(state) }
-})(withStyles(styles)(Footer))
+export default Footer

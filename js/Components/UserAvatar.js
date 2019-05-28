@@ -15,22 +15,27 @@ const styles = () => ({
   }
 })
 
-const UserAvatar = props => {
-  if (props.src) {
-    return <Avatar src={props.src} className={props.classes.avatar} />
-  } else if (props.char) {
-    return (
-      <Avatar className={props.classes.charAvatar}>
-        {props.char}
-      </Avatar>
-    )
-  } else {
+class UserAvatar extends React.Component {
+  static propTypes = {
+    classes: PropTypes.object.isRequired,
+    src: PropTypes.string,
+    char: PropTypes.string
+  }
+
+  static defaultProps = {
+    src: '',
+    char: ''
+  }
+
+  render() {
+    if (this.props.src) {
+      return <Avatar src={this.props.src} className={this.props.classes.avatar} />
+    }
+    if (this.props.char) {
+      return <Avatar className={this.props.classes.charAvatar}>{this.props.char}</Avatar>
+    }
     return <AccountCircle />
   }
-}
-
-UserAvatar.propTypes = {
-  classes: PropTypes.object.isRequired
 }
 
 export default withStyles(styles)(UserAvatar)

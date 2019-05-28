@@ -1,15 +1,15 @@
-import { UPDATE_HEADER, UPDATE_FOOTER, UPDATE_CURRENT_USER, UPDATE_MORE } from '../actionTypes'
+import { UPDATE_HEADER, UPDATE_FOOTER, UPDATE_CURRENT_USER } from '../actionTypes'
 
 const initialState = {
   header: {
     title: '',
     onBack: null,
     onSave: null,
+    onAdd: null,
     onSearch: null
   },
   footer: {
     onFavorite: null,
-    onAdd: null,
     onMy: null
   },
   user: null

@@ -2,29 +2,28 @@ import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
-import { withAlert } from 'react-alert'
+import { message, Button, Form, Input, Typography } from 'antd'
 
 import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
 import { updateHeader } from '../redux/actions'
 
 const Comment = Parse.Object.extend('Comment')
 
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  dense: {
-    marginTop: 16,
-    marginLeft: 16,
-    marginRight: 16
-  }
-})
-
 class EditComment extends React.Component {
+  static propTypes = {
+    boundUpdateHader: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    commentId: PropTypes.string,
+    post: PropTypes.object.isRequired,
+    currentUserName: PropTypes.string,
+    currentUser: PropTypes.object.isRequired
+  }
+
+  static defaultProps = {
+    commentId: null,
+    currentUserName: ''
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -34,7 +33,6 @@ class EditComment extends React.Component {
     this.comment = null
 
     if (props.commentId) {
-      const Comment = Parse.Object.extend('Comment')
       const query = new Parse.Query(Comment)
       query.equalTo('objectId', props.commentId)
 
@@ -53,11 +51,11 @@ class EditComment extends React.Component {
   }
 
   onSave = () => {
-    const { history, currentUser, currentUserName, post, alert } = this.props
+    const { history, currentUser, currentUserName, post } = this.props
     const { content } = this.state
 
     if (!content || content.length < 3) {
-      alert.show('内容最少 3 个字')
+      message.error('内容最少 3 个字')
       return
     }
 
@@ -81,7 +79,7 @@ class EditComment extends React.Component {
       .then(() => {
         history.goBack()
       })
-      .catch(err => alert.show(err.message))
+      .catch(err => message.error(err.message))
   }
 
   contentChange = event => {
@@ -89,7 +87,7 @@ class EditComment extends React.Component {
   }
 
   render() {
-    const { history, classes, boundUpdateHader, post } = this.props
+    const { history, boundUpdateHader, post } = this.props
     const { content } = this.state
 
     boundUpdateHader({
@@ -99,34 +97,35 @@ class EditComment extends React.Component {
     })
 
     return (
-      <form className={classes.container} noValidate autoComplete="off">
-        <Typography gutterBottom variant="h5" component="h2">
-          {post && post.get('title')}
-        </Typography>
-        <TextField
-          id="content"
-          label="评论"
-          multiline
-          margin="dense"
-          variant="outlined"
-          type="text"
-          fullWidth
-          value={content}
-          onChange={this.contentChange}
-        />
-      </form>
+      <Form layout="vertical">
+        <Typography.Title level={4}>{post && post.get('title')}</Typography.Title>
+        <Form.Item>
+          <Input.TextArea
+            id="content"
+            label="评论"
+            multiline
+            rows={8}
+            margin="dense"
+            variant="outlined"
+            type="text"
+            fullWidth
+            value={content}
+            onChange={this.contentChange}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={() => this.onSave()}>
+            回复
+          </Button>
+        </Form.Item>
+      </Form>
     )
   }
 }
 
-EditComment.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
 export default connect(
   (state, ownProps) => {
-    const postId = ownProps.match.params.postId
-    const commentId = ownProps.match.params.commentId
+    const { postId, commentId } = ownProps.match.params
     return {
       login: login(state),
       currentUserName: currentUserName(state),
@@ -136,9 +135,7 @@ export default connect(
       commentId
     }
   },
-  dispatch => {
-    return {
-      boundUpdateHader: header => dispatch(updateHeader(header))
-    }
-  }
-)(withStyles(styles)(withAlert(EditComment)))
+  dispatch => ({
+    boundUpdateHader: header => dispatch(updateHeader(header))
+  })
+)(EditComment)

@@ -5,3 +5,4 @@ test.js
 logs
 package-lock.json
 yarn.lock
+.DS_Store

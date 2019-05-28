@@ -2,43 +2,38 @@ import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField'
-import { withAlert } from 'react-alert'
+import { message, Button, Form, Input } from 'antd'
 
 import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
 import { updateHeader, updatePost } from '../redux/actions'
 
 const Post = Parse.Object.extend('Post')
 
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
-  },
-  dense: {
-    marginTop: 16,
-    marginLeft: 16,
-    marginRight: 16
-  }
-})
-
 class EditPost extends React.Component {
+  static propTypes = {
+    boundUpdateHader: PropTypes.func.isRequired,
+    boundUpdatePost: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    post: PropTypes.object.isRequired,
+    currentUser: PropTypes.string,
+    currentUserName: PropTypes.string
+  }
+
+  static defaultProps = {
+    currentUser: null,
+    currentUserName: ''
+  }
+
   constructor(props) {
     super(props)
     this.state = {
       title: props.post && props.post.get('title'),
-      content: props.post && props.post.get('content'),
-      description: props.post && props.post.get('description')
+      content: props.post && props.post.get('content')
     }
   }
 
   onSave = () => {
-    const { history, alert, boundUpdatePost, currentUser, currentUserName } = this.props
+    const { history, boundUpdatePost, currentUser, currentUserName } = this.props
     const { title, content } = this.state
     let { post } = this.props
 
@@ -58,12 +53,12 @@ class EditPost extends React.Component {
     }
 
     if (!title || title.length < 4) {
-      alert.show('标题最少 4 个字')
+      message.error('标题最少 4 个字')
       return
     }
 
     if (!content || content.length < 10) {
-      alert.show('内容最少 10 个字')
+      message.error('内容最少 10 个字')
       return
     }
 
@@ -73,7 +68,7 @@ class EditPost extends React.Component {
         boundUpdatePost(result)
         history.goBack()
       })
-      .catch(err => alert.show(err.message))
+      .catch(err => message.error(err.message))
   }
 
   titleChange = event => {
@@ -85,51 +80,45 @@ class EditPost extends React.Component {
   }
 
   render() {
-    const { history, classes, boundUpdateHader } = this.props
+    const { history, boundUpdateHader } = this.props
     boundUpdateHader({
       title: '编辑文章',
-      onBack: () => history.goBack(),
-      onSave: () => this.onSave()
+      onBack: () => history.goBack()
     })
 
     return (
-      <form className={classes.container} noValidate autoComplete="off">
-        <TextField
-          id="title"
-          label="标题"
-          autoFocus
-          className={classes.textField}
-          margin="dense"
-          variant="outlined"
-          type="text"
-          fullWidth
-          value={this.state.title}
-          onChange={this.titleChange}
-        />
-        <TextField
-          id="content"
-          label="内容"
-          multiline
-          className={classes.textField}
-          margin="dense"
-          variant="outlined"
-          type="text"
-          fullWidth
-          value={this.state.content}
-          onChange={this.contentChange}
-        />
-      </form>
+      <Form layout="vertical">
+        <Form.Item label="标题">
+          <Input
+            id="title"
+            label="标题"
+            type="text"
+            value={this.state.title}
+            onChange={this.titleChange}
+          />
+        </Form.Item>
+        <Form.Item label="正文">
+          <Input.TextArea
+            id="content"
+            rows={10}
+            fullWidth
+            value={this.state.content}
+            onChange={this.contentChange}
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={() => this.onSave()}>
+            保存
+          </Button>
+        </Form.Item>
+      </Form>
     )
   }
 }
 
-EditPost.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
 export default connect(
   (state, ownProps) => {
-    const postId = ownProps.match.params.postId
+    const { postId } = ownProps.match.params
     return {
       login: login(state),
       currentUserName: currentUserName(state),
@@ -138,10 +127,8 @@ export default connect(
       postId
     }
   },
-  dispatch => {
-    return {
-      boundUpdateHader: header => dispatch(updateHeader(header)),
-      boundUpdatePost: post => dispatch(updatePost(post))
-    }
-  }
-)(withStyles(styles)(withAlert(EditPost)))
+  dispatch => ({
+    boundUpdateHader: header => dispatch(updateHeader(header)),
+    boundUpdatePost: post => dispatch(updatePost(post))
+  })
+)(EditPost)

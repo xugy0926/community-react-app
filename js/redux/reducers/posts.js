@@ -23,14 +23,13 @@ export default function(state = initialState, action) {
     }
     case UPDATE_POST: {
       const { post } = action.payload
-      const has = R.find(R.propEq('id', post.id), state.posts) ? true : false
+      const has = !!R.find(R.propEq('id', post.id), state.posts)
 
       if (has) {
         const newPosts = state.posts.map(oldPost => (oldPost.id === post.id ? post : oldPost))
         return Object.assign({}, state, { posts: [...newPosts] })
-      } else {
-        return Object.assign({}, state, { posts: [...state.posts] })
       }
+      return Object.assign({}, state, { posts: [...state.posts] })
     }
     case UPDATE_MORE: {
       const { more } = action.payload

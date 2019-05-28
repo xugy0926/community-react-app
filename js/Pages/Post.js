@@ -2,16 +2,10 @@ import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import CardMedia from '@material-ui/core/CardMedia'
-import Typography from '@material-ui/core/Typography'
+import { message, Card, Select } from 'antd'
 import ReactMarkdown from 'react-markdown'
 
-import CommentList from '../Components/CommentList'
+import CommentList from './CommentList'
 import CodeBlock from '../Components/CodeBlock'
 
 import { login, currentUserId, currentUser, onePost } from '../redux/selectors'
@@ -19,31 +13,31 @@ import { updateHeader, updateFooter } from '../redux/actions'
 
 import '../github-markdown.css'
 
-const styles = {
-  media: {
-    height: 140
-  },
-  author: {
-    color: '#757575'
-  },
-  content: {
-    marginTop: 30
-  },
-  commentbtn: {
-    marginTop: 10,
-    marginLeft: 'auto',
-    marginRight: -8
-  }
-}
-
 const query = new Parse.Query(Parse.Object.extend('Post'))
 
 class Post extends React.Component {
+  static propTypes = {
+    boundUpdateHader: PropTypes.func.isRequired,
+    boundUpdateFooter: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
+    login: PropTypes.bool.isRequired,
+    post: PropTypes.object.isRequired,
+    postId: PropTypes.object.isRequired,
+    currentUserId: PropTypes.string
+  }
+
+  static defaultProps = {
+    currentUserId: null
+  }
+
+  operate = [
+    { lable: '编辑', value: 0, action: () => this.onEdit() },
+    { lable: '删除', value: 1, action: () => this.onDelete() }
+  ]
+
   constructor(props) {
     super(props)
-    this.state = {
-      post: this.props.post
-    }
+    this.state = { post: this.props.post }
 
     const { postId } = this.props
     if (!this.state.post) {
@@ -63,11 +57,11 @@ class Post extends React.Component {
       return
     }
 
-    history.push('/edit/' + post.id)
+    history.push(`/edit/${post.id}`)
   }
 
   onDelete = () => {
-    const { history, alert, login } = this.props
+    const { history, login } = this.props
     const { post } = this.state
 
     if (!login) {
@@ -81,12 +75,12 @@ class Post extends React.Component {
         history.push('/')
       })
       .catch(err => {
-        alert.show(err.message)
+        message.error(err.message)
       })
   }
 
   onComment = () => {
-    const { history, alert, login } = this.props
+    const { history, login } = this.props
     const { post } = this.state
 
     if (!login) {
@@ -94,83 +88,68 @@ class Post extends React.Component {
       return
     }
 
-    history.push('/edit_comment/' + post.id)
+    history.push(`/edit_comment/${post.id}`)
   }
 
-  mediaComp(src) {
-    return src ? <CardMedia className={this.props.classes.media} /> : <React.Fragment />
-  }
+  handleOperate = value => this.operate[value].action()
 
-  descriptionComp(content) {
-    return content ? (
+  mediaComp = src => (src ? <div /> : <React.Fragment />)
+
+  descriptionComp = content =>
+    content ? (
       <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
     ) : (
       <React.Fragment />
     )
-  }
 
-  recommandUrlComp(url) {
-    return url ? <a href={url}>阅读</a> : <React.Fragment />
-  }
+  recommandUrlComp = url => (url ? <a href={url}>阅读</a> : <React.Fragment />)
 
-  contentComp(content) {
-    return content ? (
-      <ReactMarkdown className="markdown-body" skipHtml={true} source={content} renderers={{ code: CodeBlock }} />
+  contentComp = content =>
+    content ? (
+      <ReactMarkdown
+        className="markdown-body"
+        skipHtml
+        source={content}
+        renderers={{ code: CodeBlock }}
+      />
     ) : (
       <React.Fragment />
     )
-  }
 
-  editComp(post) {
+  operateComp = post => {
     const authorId = post && post.get('author') && post.get('author').id
     const currentId = this.props.currentUserId
     return authorId && currentId && authorId === currentId ? (
-      <CardActions>
-        <Button size="small" color="primary" onClick={this.onEdit}>
-          编辑
-        </Button>
-        <Button size="small" color="primary" onClick={this.onDelete}>
-          删除
-        </Button>
-      </CardActions>
+      <Select defaultValue="操作" onChange={this.handleOperate}>
+        {this.operate.map(operate => (
+          <Select.Option key={operate.value}>{operate.lable}</Select.Option>
+        ))}
+      </Select>
     ) : (
       <div />
     )
   }
 
   render() {
-    const { classes, history, boundUpdateHader, boundUpdateFooter, postId } = this.props
+    const { history, boundUpdateHader, boundUpdateFooter } = this.props
     const { post } = this.state
 
-    boundUpdateHader({ onBack: () => history.push('/') })
+    boundUpdateHader({ title: post.get('title'), onBack: () => history.push('/') })
     boundUpdateFooter({ onAdd: () => this.onComment() })
 
-    const media = this.mediaComp(post && post.get('media'))
     const description = this.descriptionComp(post && post.get('description'))
     const recommandUrl = this.recommandUrlComp(post && post.get('recommendUrl'))
     const content = this.contentComp(post && post.get('content'))
-    const editComp = this.editComp(post)
 
     return post ? (
       <React.Fragment>
-        <Card className={classes.card}>
-          {media}
-          <CardContent>
-            <Typography gutterBottom variant="h4" component="h4">
-              {post.get('title')}
-            </Typography>
-            <div className={classes.author}>{post.get('authorName')}</div>
-            <div className={classes.content}>
-              {description}
-              {recommandUrl}
-              {content}
-            </div>
-          </CardContent>
-          {editComp}
+        <Card title={post.get('title')} extra={this.operateComp}>
+          {description}
+          {recommandUrl}
+          {content}
         </Card>
 
         <CommentList
-          alert={this.props.alert}
           login={this.props.login}
           currentUserId={this.props.currentUserId}
           post={this.props.post}
@@ -183,13 +162,9 @@ class Post extends React.Component {
   }
 }
 
-Post.propTypes = {
-  classes: PropTypes.object.isRequired
-}
-
 export default connect(
   (state, ownProps) => {
-    const postId = ownProps.match.params.postId
+    const { postId } = ownProps.match.params
     return {
       login: login(state),
       currentUserId: currentUserId(state),
@@ -198,10 +173,8 @@ export default connect(
       postId
     }
   },
-  dispatch => {
-    return {
-      boundUpdateHader: header => dispatch(updateHeader(header)),
-      boundUpdateFooter: footer => dispatch(updateFooter(footer))
-    }
-  }
-)(withStyles(styles)(Post))
+  dispatch => ({
+    boundUpdateHader: header => dispatch(updateHeader(header)),
+    boundUpdateFooter: footer => dispatch(updateFooter(footer))
+  })
+)(Post)
