@@ -1,4 +1,10 @@
 {
   "presets": ["@babel/env", "@babel/preset-react"],
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  "plugins": [
+    ["@babel/plugin-proposal-class-properties"],
+    ["import", { "libraryName": "antd", "libraryDirectory": "lib"}, "ant"],
+    ["import", { "libraryName": "antd", "style": true }],
+    ["import", { "libraryName": "moment", "libraryDirectory": "lib" }, "moment"],
+    ["import", { "libraryName": "ramda", }, "ramda"]
+  ]
 }
