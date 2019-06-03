@@ -3,10 +3,8 @@ import moment from 'moment'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { message, Comment, List } from 'antd'
-import ReactMarkdown from 'react-markdown'
-import CodeBlock from '../Components/CodeBlock'
 
-import '../github-markdown.css'
+import MarkdownBlock from '../Components/MarkdownBlock'
 
 class CommentList extends React.Component {
   static propTypes = {
@@ -98,14 +96,7 @@ class CommentList extends React.Component {
             <Comment
               actions={actions}
               author={authorName}
-              content={
-                <ReactMarkdown
-                  className="markdown-body"
-                  skipHtml
-                  source={content}
-                  renderers={{ code: CodeBlock }}
-                />
-              }
+              content={<MarkdownBlock content={content} />}
               datetime={<span>{moment(item.get('updatedAt')).fromNow()}</span>}
             />
           )

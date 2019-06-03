@@ -10,6 +10,7 @@ const styles = {
 
 class Header extends React.Component {
   static propTypes = {
+    history: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
     onBack: PropTypes.func,
     onAdd: PropTypes.func
@@ -27,7 +28,19 @@ class Header extends React.Component {
           style={styles.main}
           onBack={() => this.props.onBack()}
           title={this.props.title}
-          extra={this.props.onAdd ? <Icon type="plus" onClick={() => this.props.onAdd()} /> : null}
+          extra={
+            <div>
+              {this.props.onAdd ? (
+                <Icon type="plus" style={{ marginRight: 20 }} onClick={() => this.props.onAdd()} />
+              ) : null}
+              <Icon
+                type="unordered-list"
+                style={{ marginRight: 20 }}
+                onClick={() => this.props.history.push('/projects')}
+              />
+              <Icon type="user" onClick={() => this.props.history.push('/my')} />
+            </div>
+          }
         />
       </Affix>
     )

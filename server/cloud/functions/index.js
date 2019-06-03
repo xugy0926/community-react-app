@@ -1,3 +1,1 @@
-Parse.Cloud.define('health', function() {
-  return 'ok'
-})
+Parse.Cloud.define('health', () => 'ok')

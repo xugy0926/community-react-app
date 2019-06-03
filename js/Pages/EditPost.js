@@ -1,100 +1,37 @@
 import Parse from 'parse'
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { message, Button, Form, Input } from 'antd'
+import { Button, Form, Input } from 'antd'
 
-import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
+import { login, onePost } from '../redux/selectors'
 import { updateHeader, updatePost } from '../redux/actions'
+import Layout from '../Components/Layout'
 
 const Post = Parse.Object.extend('Post')
 
-class EditPost extends React.Component {
-  static propTypes = {
-    boundUpdateHader: PropTypes.func.isRequired,
-    boundUpdatePost: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
-    post: PropTypes.object.isRequired,
-    currentUser: PropTypes.string,
-    currentUserName: PropTypes.string
+function EditPost(props) {
+  const { post, boundUpdateHader, history, boundUpdatePost } = props
+  boundUpdateHader({ history, title: '编辑文章', onBack: () => history.goBack() })
+
+  const [title, setTitle] = useState((post && post.get('title')) || '')
+  const [content, setContent] = useState((post && post.get('content')) || '')
+
+  const onSave = () => {
+    const post = post || new Post()
+    boundUpdatePost({ post, title, content }).then(() => history.goBack())
   }
 
-  static defaultProps = {
-    currentUser: null,
-    currentUserName: ''
-  }
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      title: props.post && props.post.get('title'),
-      content: props.post && props.post.get('content')
-    }
-  }
-
-  onSave = () => {
-    const { history, boundUpdatePost, currentUser, currentUserName } = this.props
-    const { title, content } = this.state
-    let { post } = this.props
-
-    post = post || new Post()
-    post.set({
-      title,
-      content,
-      author: currentUser,
-      authorName: currentUserName
-    })
-
-    if (!post.id) {
-      const roleACL = new Parse.ACL()
-      roleACL.setPublicReadAccess(true)
-      roleACL.setWriteAccess(currentUser, true)
-      post.setACL(roleACL)
-    }
-
-    if (!title || title.length < 4) {
-      message.error('标题最少 4 个字')
-      return
-    }
-
-    if (!content || content.length < 10) {
-      message.error('内容最少 10 个字')
-      return
-    }
-
-    post
-      .save()
-      .then(result => {
-        boundUpdatePost(result)
-        history.goBack()
-      })
-      .catch(err => message.error(err.message))
-  }
-
-  titleChange = event => {
-    this.setState({ title: event.target.value })
-  }
-
-  contentChange = event => {
-    this.setState({ content: event.target.value })
-  }
-
-  render() {
-    const { history, boundUpdateHader } = this.props
-    boundUpdateHader({
-      title: '编辑文章',
-      onBack: () => history.goBack()
-    })
-
-    return (
+  return (
+    <Layout>
       <Form layout="vertical">
         <Form.Item label="标题">
           <Input
             id="title"
             label="标题"
             type="text"
-            value={this.state.title}
-            onChange={this.titleChange}
+            value={title}
+            onChange={e => setTitle(e.target.value)}
           />
         </Form.Item>
         <Form.Item label="正文">
@@ -102,18 +39,18 @@ class EditPost extends React.Component {
             id="content"
             rows={10}
             fullWidth
-            value={this.state.content}
-            onChange={this.contentChange}
+            value={content}
+            onChange={e => setContent(e.target.value)}
           />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" onClick={() => this.onSave()}>
+          <Button type="primary" onClick={() => onSave()}>
             保存
           </Button>
         </Form.Item>
       </Form>
-    )
-  }
+    </Layout>
+  )
 }
 
 export default connect(
@@ -121,10 +58,7 @@ export default connect(
     const { postId } = ownProps.match.params
     return {
       login: login(state),
-      currentUserName: currentUserName(state),
-      currentUser: currentUser(state),
-      post: onePost(state, postId),
-      postId
+      post: onePost(state, postId)
     }
   },
   dispatch => ({
@@ -132,3 +66,10 @@ export default connect(
     boundUpdatePost: post => dispatch(updatePost(post))
   })
 )(EditPost)
+
+EditPost.propTypes = {
+  boundUpdateHader: PropTypes.func.isRequired,
+  boundUpdatePost: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired
+}

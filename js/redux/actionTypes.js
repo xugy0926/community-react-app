@@ -6,3 +6,11 @@ export const UPDATE_KEY_WORD = 'UPDATE_KEY_WORD'
 export const UPDATE_POST = 'UPDATE_POST'
 export const LOAD_POSTS = 'LOAD_POSTS'
 export const UPDATE_LOADING = 'UPDATE_LOADING'
+// project
+export const LOAD_PROJECTS = 'LOAD_PROJECTS'
+export const UPDATE_PROJECT = 'UPDATE_PROJECT'
+export const DELETE_PROJECT = 'DELETE_PROJECT'
+// note
+export const UPDATE_NOTE = 'UPDATE_NOTE'
+export const LOAD_NOTES = 'LOAD_NOTES'
+export const DELETE_NOTE = 'DELETE_NOTE'

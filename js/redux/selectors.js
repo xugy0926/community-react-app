@@ -13,3 +13,6 @@ export const keyWord = store => store.posts.keyWord
 export const posts = store => store.posts.posts
 export const postsCount = store => store.posts.posts.length
 export const onePost = (store, id) => R.find(R.propEq('id', id), store.posts.posts)
+export const notes = store => store.notes.notes
+export const projects = store => store.projects.projects
+export const oneProject = (store, id) => R.find(R.propEq('id', id), store.projects.projects)

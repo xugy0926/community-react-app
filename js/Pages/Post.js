@@ -3,15 +3,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { message, Card, Select } from 'antd'
-import ReactMarkdown from 'react-markdown'
 
+import MarkdownBlock from '../Components/MarkdownBlock'
 import CommentList from './CommentList'
-import CodeBlock from '../Components/CodeBlock'
 
 import { login, currentUserId, currentUser, onePost } from '../redux/selectors'
-import { updateHeader, updateFooter } from '../redux/actions'
-
-import '../github-markdown.css'
+import { updateHeader } from '../redux/actions'
+import Layout from '../Components/Layout'
 
 const query = new Parse.Query(Parse.Object.extend('Post'))
 
@@ -37,10 +35,15 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { post: this.props.post }
+    const { boundUpdateHader, post, postId, history } = this.props
 
-    const { postId } = this.props
-    if (!this.state.post) {
+    boundUpdateHader({
+      history,
+      title: post && post.get('title'),
+      onBack: () => history.push('/')
+    })
+
+    if (!post) {
       query.equalTo('objectId', postId)
       query.first().then(item => {
         this.setState({ post: item })
@@ -95,26 +98,11 @@ class Post extends React.Component {
 
   mediaComp = src => (src ? <div /> : <React.Fragment />)
 
-  descriptionComp = content =>
-    content ? (
-      <ReactMarkdown className="markdown-body" source={content} renderers={{ code: CodeBlock }} />
-    ) : (
-      <React.Fragment />
-    )
+  descriptionComp = content => (content ? <MarkdownBlock content={content} /> : <React.Fragment />)
 
   recommandUrlComp = url => (url ? <a href={url}>阅读</a> : <React.Fragment />)
 
-  contentComp = content =>
-    content ? (
-      <ReactMarkdown
-        className="markdown-body"
-        skipHtml
-        source={content}
-        renderers={{ code: CodeBlock }}
-      />
-    ) : (
-      <React.Fragment />
-    )
+  contentComp = content => (content ? <MarkdownBlock content={content} /> : <React.Fragment />)
 
   operateComp = post => {
     const authorId = post && post.get('author') && post.get('author').id
@@ -131,33 +119,24 @@ class Post extends React.Component {
   }
 
   render() {
-    const { history, boundUpdateHader, boundUpdateFooter } = this.props
-    const { post } = this.state
-
-    boundUpdateHader({ title: post.get('title'), onBack: () => history.push('/') })
-    boundUpdateFooter({ onAdd: () => this.onComment() })
+    const { history, post, login, currentUserId } = this.props
 
     const description = this.descriptionComp(post && post.get('description'))
     const recommandUrl = this.recommandUrlComp(post && post.get('recommendUrl'))
     const content = this.contentComp(post && post.get('content'))
 
     return post ? (
-      <React.Fragment>
+      <Layout>
         <Card title={post.get('title')} extra={this.operateComp}>
           {description}
           {recommandUrl}
           {content}
         </Card>
 
-        <CommentList
-          login={this.props.login}
-          currentUserId={this.props.currentUserId}
-          post={this.props.post}
-          history={history}
-        />
-      </React.Fragment>
+        <CommentList login={login} currentUserId={currentUserId} post={post} history={history} />
+      </Layout>
     ) : (
-      <React.Fragment />
+      <Layout />
     )
   }
 }
@@ -174,7 +153,6 @@ export default connect(
     }
   },
   dispatch => ({
-    boundUpdateHader: header => dispatch(updateHeader(header)),
-    boundUpdateFooter: footer => dispatch(updateFooter(footer))
+    boundUpdateHader: header => dispatch(updateHeader(header))
   })
 )(Post)

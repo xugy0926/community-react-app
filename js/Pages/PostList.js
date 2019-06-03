@@ -1,8 +1,8 @@
-import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { message, Button, Input, List, Skeleton } from 'antd'
+import { Button, Input, List, Skeleton } from 'antd'
+import Layout from '../Components/Layout'
 
 import {
   currentUserName,
@@ -13,56 +13,14 @@ import {
   postsCount,
   loading
 } from '../redux/selectors'
-import {
-  updateAccount,
-  updateHeader,
-  updateFooter,
-  updateMore,
-  loadPosts,
-  updateKeyWord,
-  updateLoading
-} from '../redux/actions'
-
-const SkeletonItems = [
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
-  12,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  19,
-  20,
-  21,
-  22
-]
-
-const Post = Parse.Object.extend('Post')
-const query = new Parse.Query(Post)
-query.limit(30)
-query.descending('createdAt')
+import { updateHeader, updateFooter, loadPosts, updateKeyWord } from '../redux/actions'
 
 class PostList extends React.Component {
   static propTypes = {
     boundUpdateHeader: PropTypes.func.isRequired,
     boundUpdateKeyWord: PropTypes.func.isRequired,
-    boundUpdateAccount: PropTypes.func.isRequired,
     boundLoadPosts: PropTypes.func.isRequired,
-    boundUpdateMore: PropTypes.func.isRequired,
-    boundUpdateLoading: PropTypes.func.isRequired,
     postsCount: PropTypes.number.isRequired,
-    keyWord: PropTypes.string.isRequired,
     loading: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired,
     login: PropTypes.bool.isRequired,
@@ -73,8 +31,8 @@ class PostList extends React.Component {
   constructor(props) {
     super(props)
     props.boundUpdateHeader({
+      history: props.history,
       title: '全部文章',
-      onSearch: e => this.onSearch(e),
       onAdd: () => this.onAdd()
     })
 
@@ -84,6 +42,7 @@ class PostList extends React.Component {
 
     if (postId) {
       this.props.history.push(`/post/${postId}`)
+      return
     }
 
     this.state = {}
@@ -107,49 +66,19 @@ class PostList extends React.Component {
   }
 
   onSearch = value => {
-    const { boundUpdateKeyWord } = this.props
+    const { boundUpdateKeyWord, boundLoadPosts } = this.props
     boundUpdateKeyWord(value)
+    boundLoadPosts()
   }
 
   onLoadMore = () => {
-    const {
-      boundUpdateAccount,
-      boundLoadPosts,
-      boundUpdateMore,
-      boundUpdateLoading,
-      postsCount,
-      keyWord,
-      loading
-    } = this.props
+    const { boundLoadPosts, loading } = this.props
 
     if (loading) {
       return
     }
 
-    boundUpdateLoading(true)
-
-    query.skip(postsCount)
-    query.matches('title', keyWord)
-    query
-      .find()
-      .then(results => {
-        boundLoadPosts(results)
-        boundUpdateLoading(false)
-        if (results.length < 1) {
-          boundUpdateMore(false)
-        }
-      })
-      .catch(err => {
-        boundUpdateLoading(false)
-        const { code, messge } = err
-        if (code && code === Parse.Error.INVALID_SESSION_TOKEN) {
-          Parse.User.logOut()
-          boundUpdateAccount(null)
-          message.error('登录已过期，请重新登录')
-        } else {
-          message.error(messge)
-        }
-      })
+    boundLoadPosts()
   }
 
   onListItem = item => {
@@ -161,7 +90,7 @@ class PostList extends React.Component {
       <List
         itemLayout="vertical"
         size="large"
-        dataSource={[...SkeletonItems]}
+        dataSource={[1, 2, 3]}
         renderItem={item => (
           <List.Item key={item}>
             <Skeleton
@@ -195,8 +124,12 @@ class PostList extends React.Component {
       ) : null
 
     return (
-      <React.Fragment>
-        <Input.Search placeholder="请输入关键字" onSearch={() => this.onSearch()} enterButton />
+      <Layout>
+        <Input.Search
+          placeholder="请输入关键字"
+          onSearch={value => this.onSearch(value)}
+          enterButton
+        />
         {posts && posts.length > 0 ? (
           <List
             itemLayout="horizontal"
@@ -214,7 +147,7 @@ class PostList extends React.Component {
           />
         ) : null}
         {this.props.loading ? this.skeletonRender() : null}
-      </React.Fragment>
+      </Layout>
     )
   }
 }
@@ -230,12 +163,9 @@ export default connect(
     loading: loading(state)
   }),
   dispatch => ({
-    boundUpdateAccount: user => dispatch(updateAccount(user)),
     boundUpdateKeyWord: content => dispatch(updateKeyWord(content)),
     boundUpdateHeader: header => dispatch(updateHeader(header)),
     boundUpdateFooter: footer => dispatch(updateFooter(footer)),
-    boundUpdateMore: more => dispatch(updateMore(more)),
-    boundLoadPosts: posts => dispatch(loadPosts(posts)),
-    boundUpdateLoading: loading => dispatch(updateLoading(loading))
+    boundLoadPosts: posts => dispatch(loadPosts(posts))
   })
 )(PostList)

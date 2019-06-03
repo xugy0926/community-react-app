@@ -8,6 +8,7 @@ import { github } from '../config'
 
 import { currentUser } from '../redux/selectors'
 import { updateHeader } from '../redux/actions'
+import Layout from '../Components/Layout'
 
 class My extends React.Component {
   static propTypes = {
@@ -32,10 +33,10 @@ class My extends React.Component {
 
   render() {
     const { history, boundUpdateHader, currentUser } = this.props
-    boundUpdateHader({ title: '我的', onBack: () => history.goBack() })
+    boundUpdateHader({ history, title: '我的', onBack: () => history.goBack() })
 
     return (
-      <Col>
+      <Layout>
         {currentUser ? (
           <div>
             <Typography.Title level={4}>{currentUser.get('email')}</Typography.Title>
@@ -46,7 +47,7 @@ class My extends React.Component {
             使用 Github 账户登录
           </Button>
         )}
-      </Col>
+      </Layout>
     )
   }
 }

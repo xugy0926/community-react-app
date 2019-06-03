@@ -6,6 +6,7 @@ import { message, Button, Form, Input, Typography } from 'antd'
 
 import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
 import { updateHeader } from '../redux/actions'
+import Layout from '../Components/Layout'
 
 const Comment = Parse.Object.extend('Comment')
 
@@ -91,34 +92,37 @@ class EditComment extends React.Component {
     const { content } = this.state
 
     boundUpdateHader({
+      history,
       title: '编辑评论',
       onBack: () => history.goBack(),
       onSave: () => this.onSave()
     })
 
     return (
-      <Form layout="vertical">
-        <Typography.Title level={4}>{post && post.get('title')}</Typography.Title>
-        <Form.Item>
-          <Input.TextArea
-            id="content"
-            label="评论"
-            multiline
-            rows={8}
-            margin="dense"
-            variant="outlined"
-            type="text"
-            fullWidth
-            value={content}
-            onChange={this.contentChange}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" onClick={() => this.onSave()}>
-            回复
-          </Button>
-        </Form.Item>
-      </Form>
+      <Layout>
+        <Form layout="vertical">
+          <Typography.Title level={4}>{post && post.get('title')}</Typography.Title>
+          <Form.Item>
+            <Input.TextArea
+              id="content"
+              label="评论"
+              multiline
+              rows={8}
+              margin="dense"
+              variant="outlined"
+              type="text"
+              fullWidth
+              value={content}
+              onChange={this.contentChange}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" onClick={() => this.onSave()}>
+              回复
+            </Button>
+          </Form.Item>
+        </Form>
+      </Layout>
     )
   }
 }

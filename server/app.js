@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const express = require('express')
 const ejsMate = require('ejs-mate')
-const ParseServer = require('parse-server').ParseServer
+const { ParseServer } = require('parse-server')
 const ParseDashboard = require('parse-dashboard')
 
 const github = require('./github')

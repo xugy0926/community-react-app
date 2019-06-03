@@ -2,7 +2,7 @@ import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Col, Layout } from 'antd'
+import { Row, Layout } from 'antd'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
 import { updateAccount } from './redux/actions'
@@ -31,11 +31,13 @@ class App extends React.Component {
     boundUpdateAccount(Parse.User.current())
 
     return (
-      <Col xs={24} sm={24} md={24} lg={{ span: 12, offset: 6 }} style={styles.root}>
+      <Row style={styles.root}>
         <Header {...header} />
-        <Layout.Content style={styles.main}>{children}</Layout.Content>
+        <Layout style={{ background: '#FFFFFF' }}>
+          <Layout.Content style={styles.main}>{children}</Layout.Content>
+        </Layout>
         <Footer {...footer} />
-      </Col>
+      </Row>
     )
   }
 }

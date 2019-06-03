@@ -12,7 +12,7 @@ module.exports = {
     'prettier/react',
   ],
 
-  plugins: ['flowtype', 'css-modules', 'prettier'],
+  plugins: ['flowtype', 'css-modules', 'prettier', 'react-hooks'],
 
   globals: {
     __DEV__: true,
@@ -33,7 +33,7 @@ module.exports = {
     'no-console': [
       'error',
       {
-        allow: ['warn', 'error', 'info'],
+        allow: ['group', 'groupEnd', 'warn', 'error', 'info'],
       },
     ],
 
@@ -83,6 +83,9 @@ module.exports = {
     'react/destructuring-assignment': 'off',
     //https://eslint.org/docs/rules/no-shadow#disallow-variable-declarations-from-shadowing-variables-declared-in-the-outer-scope-no-shadow
     'no-shadow': 'off',
+    // https://reactjs.org/docs/hooks-rules.html
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
   },
 
   settings: {

@@ -21,8 +21,8 @@ module.exports = {
     port: 465
   },
   github: {
-    clientID: '9d2e19a0e3e5526991db',
-    clientSecret: '377b747fe5f16ae25849824a326b58e8600442c7',
+    clientID: '0400a5abbb43bf86d659',
+    clientSecret: 'a02a8ba54b4cb7e1c729750699d120eef6f30be4',
     callbackURL: 'http://d9ad1a54.ngrok.io/github/callback'
   },
   monitoringData: ['Post'],
