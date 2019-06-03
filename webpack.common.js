@@ -24,8 +24,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist/'),
     publicPath: '/dist/',
-    filename: '[name].js',
-    chunkFilename: '[name].js'
+    filename: '[name]-[hash].js',
+    chunkFilename: '[name]-[hash].js'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
