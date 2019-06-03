@@ -2,6 +2,19 @@ const R = require('ramda')
 const path = require('path')
 const fs = require('fs')
 const ejs = require('ejs')
+const nodemailer = require('nodemailer')
+const marked = require('marked')
+const config = require('config')
+
+const transporter = nodemailer.createTransport({
+  host: config.get('email').host,
+  port: config.get('email').port,
+  secure: false,
+  auth: {
+    user: config.get('email').fromAddress,
+    pass: config.get('email').password
+  }
+})
 
 Parse.Cloud.job('task', () => {
   setTimeout(async () => {
@@ -9,6 +22,8 @@ Parse.Cloud.job('task', () => {
     const queryUser = new Parse.Query(User)
     const Note = Parse.Object.extend('Note')
     const queryNote = new Parse.Query(Note)
+    const Project = Parse.Object.extend('Project')
+    const queryProject = new Parse.Query(Project)
 
     const users = await queryUser.find(null, { useMasterKey: true })
 
@@ -17,23 +32,33 @@ Parse.Cloud.job('task', () => {
       const notes = await queryNote.find({ useMasterKey: true })
       const projects = []
       for (let j = 0; j < notes.length; j++) {
-        const has = !!R.find(R.propEq('id', notes[i].get('parent').id), projects)
-
+        const note = notes[j].toJSON()
+        note.content = marked(note.content)
+        const has = !!R.find(R.propEq('objectId', note.parent.objectId), projects)
         if (has) {
-          const index = R.findIndex(R.propEq('id', notes[i].get('parent').id))(projects)
-          projects[index].childrend.push(notes[i])
+          const index = R.findIndex(R.propEq('objectId', note.parent.objectId))(projects)
+          projects[index].children.push(note)
         } else {
-          const parent = notes[i].get('parent').toJSON()
-          parent.clidren = [notes[i]]
+          queryProject.equalTo('objectId', note.parent.objectId)
+          const parent = await queryProject
+            .first({ useMasterKey: true })
+            .then(project => project.toJSON())
+          parent.children = [note]
           projects.push(parent)
         }
       }
 
-      const str = ejs.render(
+      const html = ejs.render(
         fs.readFileSync(path.join(__dirname, '../../views/report/html.ejs'), 'utf-8'),
-        { projects, appName: 'hello' }
+        { projects, appName: config.get('appName') }
       )
-      console.log(str)
+      const message = {
+        from: config.get('email').fromAddress,
+        to: 'gaoyang.xu@alibaba-inc.com',
+        subject: 'Daily Report',
+        html
+      }
+      transporter.sendMail(message, console.log)
     }
   }, 1000)
 })
