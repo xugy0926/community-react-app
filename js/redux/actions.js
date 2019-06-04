@@ -105,18 +105,10 @@ export const loadPosts = () => (dispatch, getState) => {
 
 export const updatePost = ({ post, title, content }) => (dispatch, getState) =>
   new Promise((resolve, reject) => {
-    post.set({
-      title,
-      content,
-      author: getState().app.user,
-      authorName: getState().app.user.username
-    })
-
-    if (!post.id) {
-      const roleACL = new Parse.ACL()
-      roleACL.setPublicReadAccess(true)
-      roleACL.setWriteAccess(getState().app.user, true)
-      post.setACL(roleACL)
+    const { user } = getState().app
+    if (!user) {
+      message.error('没有登录信息!')
+      reject()
     }
 
     if (!title || title.length < 4) {
@@ -129,6 +121,20 @@ export const updatePost = ({ post, title, content }) => (dispatch, getState) =>
       message.error('内容最少 10 个字')
       reject()
       return
+    }
+
+    post.set({
+      title,
+      content,
+      author: getState().app.user,
+      authorName: getState().app.user.username
+    })
+
+    if (!post.id) {
+      const roleACL = new Parse.ACL()
+      roleACL.setPublicReadAccess(true)
+      roleACL.setWriteAccess(getState().app.user, true)
+      post.setACL(roleACL)
     }
 
     dispatch(updateLoading(true))
