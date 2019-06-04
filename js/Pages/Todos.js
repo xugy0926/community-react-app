@@ -320,7 +320,7 @@ class Todos extends React.Component {
           <Col span={6}>
             <Button
               onClick={() => {
-                Parse.Cloud.startJob('dailyReport', {
+                Parse.Cloud.run('dailyReport', {
                   email: this.props.currentUser.get('email')
                 })
                   .then(Message.success)
