@@ -3,7 +3,7 @@ import update from 'immutability-helper'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button } from 'antd'
+import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button, Message } from 'antd'
 
 import MarkdownBlock from '../Components/MarkdownBlock'
 import { currentUser, notes, oneProject } from '../redux/selectors'
@@ -192,13 +192,6 @@ class Todos extends React.Component {
 
     return (
       <React.Fragment>
-        <Button
-          onClick={() => {
-            Parse.Cloud.startJob('dailyReport', { email: this.props.currentUser.get('email') })
-          }}
-        >
-          发邮件
-        </Button>
         <Row gutter={20}>
           {this.state.columns.map((column, index) => (
             <Col span={6} key={column.type}>
@@ -324,6 +317,19 @@ class Todos extends React.Component {
               </Modal>
             </Col>
           ))}
+          <Col span={6}>
+            <Button
+              onClick={() => {
+                Parse.Cloud.startJob('dailyReport', {
+                  email: this.props.currentUser.get('email')
+                })
+                  .then(Message.success)
+                  .catch(Message.error)
+              }}
+            >
+              发邮件
+            </Button>
+          </Col>
         </Row>
       </React.Fragment>
     )
