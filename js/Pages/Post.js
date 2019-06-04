@@ -15,17 +15,17 @@ const query = new Parse.Query(Parse.Object.extend('Post'))
 
 class Post extends React.Component {
   static propTypes = {
-    boundUpdateHader: PropTypes.func.isRequired,
-    boundUpdateFooter: PropTypes.func.isRequired,
+    boundUpdateHeader: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     login: PropTypes.bool.isRequired,
-    post: PropTypes.object.isRequired,
+    post: PropTypes.object,
     postId: PropTypes.object.isRequired,
     currentUserId: PropTypes.string
   }
 
   static defaultProps = {
-    currentUserId: null
+    currentUserId: null,
+    post: null
   }
 
   operate = [
@@ -35,9 +35,11 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    const { boundUpdateHader, post, postId, history } = this.props
+    const { boundUpdateHeader, post, postId, history } = this.props
 
-    boundUpdateHader({
+    this.state = { post }
+
+    boundUpdateHeader({
       history,
       title: post && post.get('title'),
       onAdd: () => this.onComment(),
@@ -46,14 +48,15 @@ class Post extends React.Component {
 
     if (!post) {
       query.equalTo('objectId', postId)
-      query.first().then(item => {
-        this.setState({ post: item })
+      query.first().then(post => {
+        this.setState({ post })
       })
     }
   }
 
   onEdit = () => {
-    const { history, login, post } = this.props
+    const { history, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -64,7 +67,8 @@ class Post extends React.Component {
   }
 
   onDelete = () => {
-    const { history, login, post } = this.props
+    const { history, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -82,7 +86,8 @@ class Post extends React.Component {
   }
 
   onComment = () => {
-    const { history, login, post } = this.props
+    const { history, login } = this.props
+    const { post } = this.state
 
     if (!login) {
       history.push('/my')
@@ -117,7 +122,8 @@ class Post extends React.Component {
   }
 
   render() {
-    const { history, post, login, currentUserId } = this.props
+    const { history, login, currentUserId } = this.props
+    const { post } = this.state
 
     const description = this.descriptionComp(post && post.get('description'))
     const recommandUrl = this.recommandUrlComp(post && post.get('recommendUrl'))
@@ -151,6 +157,6 @@ export default connect(
     }
   },
   dispatch => ({
-    boundUpdateHader: header => dispatch(updateHeader(header))
+    boundUpdateHeader: header => dispatch(updateHeader(header))
   })
 )(Post)
