@@ -35,7 +35,7 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    const { boundUpdateHeader, post, postId, history } = this.props
+    const { boundUpdateHeader, post, postId, history } = props
 
     this.state = { post }
 

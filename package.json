@@ -54,13 +54,12 @@
     "prop-types": "^15.6.2",
     "ramda": "^0.26.1",
     "react": "^16.8.6",
-    "react-dom": "^16.5.2",
-    "react-hot-loader": "^4.3.11",
-    "react-infinite-scroller": "^1.2.2",
-    "react-markdown": "^4.0.4",
-    "react-redux": "^6.0.0",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1",
+    "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.9.0",
+    "react-markdown": "^4.0.8",
+    "react-redux": "^7.0.3",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
     "redux": "^4.0.1"
   }
 }
