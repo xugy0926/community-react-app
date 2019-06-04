@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 })
 
 const send = function(message) {
-  message.from = config.get('email').fromAddress,
+  message.from = config.get('email').fromAddress
   return transporter.sendMail(message)
 }
 
