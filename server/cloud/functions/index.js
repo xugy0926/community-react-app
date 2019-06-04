@@ -4,7 +4,7 @@ const fs = require('fs')
 const ejs = require('ejs')
 const marked = require('marked')
 
-const config = reuqire('config')
+const config = require('config')
 
 const { send } = require('../../mail')
 
