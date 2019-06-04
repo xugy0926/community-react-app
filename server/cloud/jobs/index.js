@@ -9,26 +9,30 @@ const config = require('config')
 const transporter = nodemailer.createTransport({
   host: config.get('email').host,
   port: config.get('email').port,
-  secure: false,
+  secure: true,
   auth: {
     user: config.get('email').fromAddress,
     pass: config.get('email').password
   }
 })
 
-Parse.Cloud.job('task', () => {
+Parse.Cloud.job('dailyReport', request => {
+  console.log(request)
+
+  const { params, message, user } = request
+
+  const { email } = params.input
+
+  message('dailyReport started')
+
   setTimeout(async () => {
-    const User = Parse.Object.extend('_User')
-    const queryUser = new Parse.Query(User)
-    const Note = Parse.Object.extend('Note')
-    const queryNote = new Parse.Query(Note)
-    const Project = Parse.Object.extend('Project')
-    const queryProject = new Parse.Query(Project)
+    try {
+      const Note = Parse.Object.extend('Note')
+      const queryNote = new Parse.Query(Note)
+      const Project = Parse.Object.extend('Project')
+      const queryProject = new Parse.Query(Project)
 
-    const users = await queryUser.find(null, { useMasterKey: true })
-
-    for (let i = 0; i < users.length; i++) {
-      queryNote.equalTo('author', users[i])
+      queryNote.equalTo('author', user)
       const notes = await queryNote.find({ useMasterKey: true })
       const projects = []
       for (let j = 0; j < notes.length; j++) {
@@ -48,17 +52,23 @@ Parse.Cloud.job('task', () => {
         }
       }
 
+      if (projects.length < 1) {
+        return
+      }
+
       const html = ejs.render(
         fs.readFileSync(path.join(__dirname, '../../views/report/html.ejs'), 'utf-8'),
         { projects, appName: config.get('appName') }
       )
       const message = {
         from: config.get('email').fromAddress,
-        to: 'gaoyang.xu@alibaba-inc.com',
+        to: email,
         subject: 'Daily Report',
         html
       }
-      transporter.sendMail(message, console.log)
+      transporter.sendMail(message)
+    } catch (err) {
+      console.log(err)
     }
   }, 1000)
 })

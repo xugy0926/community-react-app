@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button } from 'antd'
 
 import MarkdownBlock from '../Components/MarkdownBlock'
-import { currentUserName, notes, oneProject } from '../redux/selectors'
+import { currentUser, notes, oneProject } from '../redux/selectors'
 import { updateHeader, loadNotes, updateNote, deleteNote } from '../redux/actions'
 
 class Todos extends React.Component {
@@ -16,6 +16,7 @@ class Todos extends React.Component {
     boundLoadNotes: PropTypes.func.isRequired,
     boundUpdateNote: PropTypes.func.isRequired,
     boundDeleteNote: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
     notes: PropTypes.array.isRequired,
     project: PropTypes.object.isRequired
   }
@@ -191,6 +192,13 @@ class Todos extends React.Component {
 
     return (
       <React.Fragment>
+        <Button
+          onClick={() => {
+            Parse.Cloud.startJob('dailyReport', { email: this.props.currentUser.get('email') })
+          }}
+        >
+          发邮件
+        </Button>
         <Row gutter={20}>
           {this.state.columns.map((column, index) => (
             <Col span={6} key={column.type}>
@@ -326,7 +334,7 @@ export default connect(
   (state, ownProps) => {
     const { projectId } = ownProps.match.params
     return {
-      currentUserName: currentUserName(state),
+      currentUser: currentUser(state),
       notes: notes(state),
       project: oneProject(state, projectId)
     }
