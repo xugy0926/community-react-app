@@ -40,6 +40,7 @@ class Post extends React.Component {
     boundUpdateHader({
       history,
       title: post && post.get('title'),
+      onAdd: () => this.onComment(),
       onBack: () => history.push('/')
     })
 

@@ -62,6 +62,17 @@ export const updateFooter = ({ ...footer }) => ({
   payload: footer
 })
 
+export const logout = () =>
+  new Promise(resolve => {
+    Parse.User.logOut()
+    resolve({
+      type: UPDATE_CURRENT_USER,
+      payload: {
+        user: null
+      }
+    })
+  })
+
 export const updateAccount = user =>
   new Promise(resolve => {
     resolve({

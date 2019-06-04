@@ -1,23 +1,24 @@
 const config = require('config')
 const passport = require('passport')
 const GitHubStrategy = require('passport-github').Strategy
+
 const authenticate = passport.authenticate('github', { failureRedirect: '/' })
 const randomize = require('randomatic')
 
 function auth(req, res, next) {
-  passport.serializeUser(function(user, done) {
+  passport.serializeUser((user, done) => {
     done(null, user)
   })
 
-  passport.deserializeUser(function(user, done) {
+  passport.deserializeUser((user, done) => {
     done(null, user)
   })
 
   passport.use(
-    new GitHubStrategy(config.get('github'), function(accessToken, refreshToken, profile, done) {
+    new GitHubStrategy(config.get('github'), ((accessToken, refreshToken, profile, done) => {
       profile.accessToken = accessToken
       done(null, profile)
-    })
+    }))
   )
 
   passport.initialize()(req, res, next)
@@ -47,9 +48,7 @@ const newGitHubUser = function(profile) {
       ts.setACL(restrictedAcl)
       return ts.save(null, { useMasterKey: true })
     })
-    .then(() => {
-      return upsertGitHubUser(profile)
-    })
+    .then(() => upsertGitHubUser(profile))
 }
 
 const upsertGitHubUser = function(profile) {
@@ -74,9 +73,7 @@ const upsertGitHubUser = function(profile) {
       .then(user => {
         const password = randomize('*', 10)
         user.setPassword(password)
-        return user.save(null, { useMasterKey: true }).then(user => {
-          return Parse.User.logIn(user.get('username'), password)
-        })
+        return user.save(null, { useMasterKey: true }).then(user => Parse.User.logIn(user.get('username'), password))
       })
       .then(user => user)
   })

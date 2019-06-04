@@ -2,17 +2,18 @@ import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Col, Button, Typography } from 'antd'
+import { Button, Typography } from 'antd'
 
 import { github } from '../config'
 
 import { currentUser } from '../redux/selectors'
-import { updateHeader } from '../redux/actions'
+import { updateHeader, logout } from '../redux/actions'
 import Layout from '../Components/Layout'
 
 class My extends React.Component {
   static propTypes = {
     boundUpdateHader: PropTypes.func.isRequired,
+    boundLogout: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     currentUser: PropTypes.object
   }
@@ -27,10 +28,6 @@ class My extends React.Component {
     }&scope=user&redirect_uri=${github.redirectURI}`
   }
 
-  onLogout = () => {
-    Parse.User.logOut()
-  }
-
   render() {
     const { history, boundUpdateHader, currentUser } = this.props
     boundUpdateHader({ history, title: '我的', onBack: () => history.goBack() })
@@ -40,7 +37,7 @@ class My extends React.Component {
         {currentUser ? (
           <div>
             <Typography.Title level={4}>{currentUser.get('email')}</Typography.Title>
-            <Button onClick={() => this.onLogout()}>退出</Button>
+            <Button onClick={() => this.props.boundLogout()}>退出</Button>
           </div>
         ) : (
           <Button button onClick={() => this.onLogin()}>
@@ -54,5 +51,8 @@ class My extends React.Component {
 
 export default connect(
   store => ({ currentUser: currentUser(store) }),
-  dispatch => ({ boundUpdateHader: header => dispatch(updateHeader(header)) })
+  dispatch => ({
+    boundUpdateHader: header => dispatch(updateHeader(header)),
+    boundLogout: () => dispatch(logout())
+  })
 )(My)

@@ -23,7 +23,7 @@ module.exports = {
   github: {
     clientID: '0400a5abbb43bf86d659',
     clientSecret: 'a02a8ba54b4cb7e1c729750699d120eef6f30be4',
-    callbackURL: 'http://d9ad1a54.ngrok.io/github/callback'
+    callbackURL: 'http://ba733c21.ngrok.io/github/callback'
   },
   monitoringData: ['Post'],
   dashboardUsers: [
