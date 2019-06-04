@@ -53,8 +53,7 @@ class Post extends React.Component {
   }
 
   onEdit = () => {
-    const { history, login } = this.props
-    const { post } = this.state
+    const { history, login, post } = this.props
 
     if (!login) {
       history.push('/my')
@@ -65,8 +64,7 @@ class Post extends React.Component {
   }
 
   onDelete = () => {
-    const { history, login } = this.props
-    const { post } = this.state
+    const { history, login, post } = this.props
 
     if (!login) {
       history.push('/my')
@@ -84,8 +82,7 @@ class Post extends React.Component {
   }
 
   onComment = () => {
-    const { history, login } = this.props
-    const { post } = this.state
+    const { history, login, post } = this.props
 
     if (!login) {
       history.push('/my')
