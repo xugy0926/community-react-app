@@ -1,12 +1,11 @@
-import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Row, Layout } from 'antd'
 import Header from './Components/Header'
 import Footer from './Components/Footer'
-import { updateAccount } from './redux/actions'
-import { header, footer } from './redux/selectors'
+import { signin } from './redux/actions'
+import { header, footer, currentUser } from './redux/selectors'
 
 const styles = {
   root: {
@@ -22,17 +21,21 @@ class App extends React.Component {
   static propTypes = {
     header: PropTypes.object.isRequired,
     footer: PropTypes.object.isRequired,
-    boundUpdateAccount: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired,
+    boundSignin: PropTypes.func.isRequired,
     children: PropTypes.object.isRequired
   }
 
+  componentDidMount() {
+    this.props.boundSignin()
+  }
+
   render() {
-    const { header, footer, boundUpdateAccount, children } = this.props
-    boundUpdateAccount(Parse.User.current())
+    const { header, footer, currentUser, children } = this.props
 
     return (
       <Row style={styles.root}>
-        <Header {...header} />
+        <Header {...header} currentUser={currentUser} />
         <Layout style={{ background: '#FFFFFF' }}>
           <Layout.Content style={styles.main}>{children}</Layout.Content>
         </Layout>
@@ -43,6 +46,6 @@ class App extends React.Component {
 }
 
 export default connect(
-  store => ({ header: header(store), footer: footer(store) }),
-  dispatch => ({ boundUpdateAccount: user => dispatch(updateAccount(user)) })
+  store => ({ header: header(store), footer: footer(store), currentUser: currentUser(store) }),
+  dispatch => ({ boundSignin: user => dispatch(signin(user)) })
 )(App)

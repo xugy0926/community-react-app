@@ -15,10 +15,10 @@ function auth(req, res, next) {
   })
 
   passport.use(
-    new GitHubStrategy(config.get('github'), ((accessToken, refreshToken, profile, done) => {
+    new GitHubStrategy(config.get('github'), (accessToken, refreshToken, profile, done) => {
       profile.accessToken = accessToken
       done(null, profile)
-    }))
+    })
   )
 
   passport.initialize()(req, res, next)
@@ -73,7 +73,9 @@ const upsertGitHubUser = function(profile) {
       .then(user => {
         const password = randomize('*', 10)
         user.setPassword(password)
-        return user.save(null, { useMasterKey: true }).then(user => Parse.User.logIn(user.get('username'), password))
+        return user
+          .save(null, { useMasterKey: true })
+          .then(user => Parse.User.logIn(user.get('username'), password))
       })
       .then(user => user)
   })

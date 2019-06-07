@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, List } from 'antd'
+import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, List, message } from 'antd'
 
 import { projects } from '../redux/selectors'
 import { updateHeader, loadProjects, updateProject, deleteProject } from '../redux/actions'
@@ -25,6 +25,7 @@ class Projects extends React.Component {
       title: 'Projects',
       onBack: () => props.history.push('/')
     })
+
     if (props.projects.length < 1) {
       props.boundLoadProjects()
     }
@@ -51,7 +52,8 @@ class Projects extends React.Component {
             content: 'Are you sure want to delete it?',
             okText: 'Delete project',
             cancelText: 'Cancel',
-            onOk: () => this.props.boundDeleteProject(editProject)
+            onOk: () =>
+              this.props.boundDeleteProject(editProject).catch(err => message.error(err.message))
           })
         }}
       >
@@ -70,7 +72,7 @@ class Projects extends React.Component {
   }
 
   onEditeProject = () => {
-    this.props.boundUpdateProject(this.state.editProject)
+    this.props.boundUpdateProject(this.state.editProject).catch(err => message.error(err.message))
   }
 
   render() {

@@ -2,7 +2,7 @@ import Parse from 'parse'
 import moment from 'moment'
 import React from 'react'
 import PropTypes from 'prop-types'
-import { message, Comment, List } from 'antd'
+import { message, Comment, List, Button } from 'antd'
 
 import MarkdownBlock from '../Components/MarkdownBlock'
 
@@ -10,8 +10,7 @@ class CommentList extends React.Component {
   static propTypes = {
     post: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    login: PropTypes.bool.isRequired,
-    currentUserId: PropTypes.string.isRequired
+    currentUser: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -42,7 +41,7 @@ class CommentList extends React.Component {
   }
 
   onReply = () => {
-    if (!this.props.login) {
+    if (!this.props.currentUser) {
       this.props.history.push('/my')
       return
     }
@@ -50,7 +49,7 @@ class CommentList extends React.Component {
   }
 
   onEdit = item => {
-    if (!this.props.login) {
+    if (!this.props.currentUser) {
       this.props.history.push('/my')
       return
     }
@@ -58,45 +57,63 @@ class CommentList extends React.Component {
   }
 
   onDelete = (item, index) => {
-    if (!this.props.login) {
+    if (!this.props.currentUser) {
       this.props.history.push('/my')
       return
     }
+
     item
       .destroy()
-      .then(() => this.setState(state => ({ items: state.items.splice(index, 1) })))
+      .then(() =>
+        this.setState(state => {
+          state.items.splice(index, 1)
+          return { items: state.items }
+        })
+      )
       .catch(err => message.error(err.message))
   }
 
   render() {
-    const { login, currentUserId } = this.props
+    const { currentUser } = this.props
     const { items } = this.state
     return (
       <List
-        header={`${items.length} 个回复`}
+        header={
+          currentUser ? (
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => {
+                this.props.history.push(`/edit_comment/${this.props.post.id}`)
+              }}
+            >
+              回复
+            </Button>
+          ) : null
+        }
         itemLayout="horizontal"
         dataSource={items}
-        renderItem={item => {
+        renderItem={(item, index) => {
           const authorName = item && item.get('authorName')
           const content = item && item.get('content')
           const authorId = item && item.get('author') && item.get('author').id
 
           const actions = []
 
-          if (login) {
+          if (currentUser) {
             actions.push(<span onClick={() => this.onReply(item)}>回复</span>)
           }
 
-          if (login && authorId && currentUserId && authorId === currentUserId) {
+          if (currentUser && authorId && currentUser.id && authorId === currentUser.id) {
             actions.push(<span onClick={() => this.onEdit(item)}>编辑</span>)
-            actions.push(<span onClick={() => this.onDelete(item)}>删除</span>)
+            actions.push(<span onClick={() => this.onDelete(item, index)}>删除</span>)
           }
 
           return (
             <Comment
               actions={actions}
               author={authorName}
-              content={<MarkdownBlock content={content} />}
+              content={<MarkdownBlock theme="markdown-body" content={content} />}
               datetime={<span>{moment(item.get('updatedAt')).fromNow()}</span>}
             />
           )

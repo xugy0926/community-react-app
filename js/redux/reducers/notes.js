@@ -1,8 +1,9 @@
-import { LOAD_NOTES, UPDATE_NOTE, DELETE_NOTE } from '../actionTypes'
+import { INIT_NOTES, LOAD_NOTES, UPDATE_NOTE, DELETE_NOTE } from '../actionTypes'
 
 const R = require('ramda')
 
 const initialState = {
+  projectId: '',
   notes: []
 }
 
@@ -10,9 +11,12 @@ const assign = oldObj => newObj => Object.assign({}, oldObj, newObj)
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case INIT_NOTES: {
+      return { ...initialState }
+    }
     case LOAD_NOTES: {
-      const { notes } = action.payload
-      return assign(state)({ notes: [...state.notes, ...notes] })
+      const { notes, projectId } = action.payload
+      return assign(state)({ notes: [...state.notes, ...notes], projectId })
     }
     case UPDATE_NOTE: {
       const { note } = action.payload

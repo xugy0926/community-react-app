@@ -4,13 +4,16 @@ import React from 'react'
 import CodeBlock from './CodeBlock'
 
 import '../github-markdown.css'
+import '../todo-markdown.css'
 
-export default function MarkdownBlock(props) {
+export default function MarkdownBlock({ theme, content }) {
   return (
     <ReactMarkdown
-      className="markdown-body"
+      className={theme}
       skipHtml
-      source={props.content}
+      linkTarget="url"
+      source={content}
+      softBreak="br"
       renderers={{ code: CodeBlock }}
     />
   )

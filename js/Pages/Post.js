@@ -1,4 +1,3 @@
-import Parse from 'parse'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
@@ -7,25 +6,21 @@ import { message, Card, Select } from 'antd'
 import MarkdownBlock from '../Components/MarkdownBlock'
 import CommentList from './CommentList'
 
-import { login, currentUserId, currentUser, onePost } from '../redux/selectors'
-import { updateHeader } from '../redux/actions'
+import { currentUser } from '../redux/selectors'
+import { updateHeader, loadPost } from '../redux/actions'
 import Layout from '../Components/Layout'
-
-const query = new Parse.Query(Parse.Object.extend('Post'))
 
 class Post extends React.Component {
   static propTypes = {
     boundUpdateHeader: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-    login: PropTypes.bool.isRequired,
-    post: PropTypes.object,
+    boundLoadPost: PropTypes.func.isRequired,
     postId: PropTypes.object.isRequired,
-    currentUserId: PropTypes.string
+    currentUser: PropTypes.object
   }
 
   static defaultProps = {
-    currentUserId: null,
-    post: null
+    currentUser: null
   }
 
   operate = [
@@ -35,30 +30,27 @@ class Post extends React.Component {
 
   constructor(props) {
     super(props)
-    const { boundUpdateHeader, post, postId, history } = props
+    const { boundUpdateHeader, boundLoadPost, postId, history } = props
 
-    this.state = { post }
+    this.state = { post: null }
 
-    boundUpdateHeader({
-      history,
-      title: post && post.get('title'),
-      onAdd: () => this.onComment(),
-      onBack: () => history.push('/')
+    boundLoadPost(postId).then(post => {
+      this.setState({ post }, () =>
+        boundUpdateHeader({
+          history,
+          title: post && post.get('title'),
+          onAdd: () => this.onComment(),
+          onBack: () => history.push('/')
+        })
+      )
     })
-
-    if (!post) {
-      query.equalTo('objectId', postId)
-      query.first().then(post => {
-        this.setState({ post })
-      })
-    }
   }
 
   onEdit = () => {
-    const { history, login } = this.props
+    const { history, currentUser } = this.props
     const { post } = this.state
 
-    if (!login) {
+    if (!currentUser) {
       history.push('/my')
       return
     }
@@ -67,10 +59,10 @@ class Post extends React.Component {
   }
 
   onDelete = () => {
-    const { history, login } = this.props
+    const { history, currentUser } = this.props
     const { post } = this.state
 
-    if (!login) {
+    if (!currentUser) {
       history.push('/my')
       return
     }
@@ -86,10 +78,10 @@ class Post extends React.Component {
   }
 
   onComment = () => {
-    const { history, login } = this.props
+    const { history, currentUser } = this.props
     const { post } = this.state
 
-    if (!login) {
+    if (!currentUser) {
       history.push('/my')
       return
     }
@@ -101,15 +93,17 @@ class Post extends React.Component {
 
   mediaComp = src => (src ? <div /> : <React.Fragment />)
 
-  descriptionComp = content => (content ? <MarkdownBlock content={content} /> : <React.Fragment />)
+  descriptionComp = content =>
+    content ? <MarkdownBlock theme="markdown-body" content={content} /> : <React.Fragment />
 
   recommandUrlComp = url => (url ? <a href={url}>阅读</a> : <React.Fragment />)
 
-  contentComp = content => (content ? <MarkdownBlock content={content} /> : <React.Fragment />)
+  contentComp = content =>
+    content ? <MarkdownBlock theme="markdown-body" content={content} /> : <React.Fragment />
 
   operateComp = post => {
     const authorId = post && post.get('author') && post.get('author').id
-    const currentId = this.props.currentUserId
+    const currentId = this.props.currentUser && this.props.currentUser.id
     return authorId && currentId && authorId === currentId ? (
       <Select defaultValue="操作" onChange={this.handleOperate}>
         {this.operate.map(operate => (
@@ -122,7 +116,7 @@ class Post extends React.Component {
   }
 
   render() {
-    const { history, login, currentUserId } = this.props
+    const { history, currentUser } = this.props
     const { post } = this.state
 
     const description = this.descriptionComp(post && post.get('description'))
@@ -131,13 +125,13 @@ class Post extends React.Component {
 
     return post ? (
       <Layout>
-        <Card title={post.get('title')} extra={this.operateComp}>
+        <Card title={post.get('title')} extra={this.operateComp(post)}>
           {description}
           {recommandUrl}
           {content}
         </Card>
 
-        <CommentList login={login} currentUserId={currentUserId} post={post} history={history} />
+        <CommentList currentUser={currentUser} post={post} history={history} />
       </Layout>
     ) : (
       <Layout />
@@ -149,14 +143,12 @@ export default connect(
   (state, ownProps) => {
     const { postId } = ownProps.match.params
     return {
-      login: login(state),
-      currentUserId: currentUserId(state),
       currentUser: currentUser(state),
-      post: onePost(state, postId),
       postId
     }
   },
   dispatch => ({
-    boundUpdateHeader: header => dispatch(updateHeader(header))
+    boundUpdateHeader: header => dispatch(updateHeader(header)),
+    boundLoadPost: id => dispatch(loadPost(id))
   })
 )(Post)

@@ -1,21 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Button, Input, List, Skeleton } from 'antd'
 import Layout from '../Components/Layout'
 
-import {
-  currentUserName,
-  login,
-  more,
-  keyWord,
-  posts,
-  postsCount,
-  loading
-} from '../redux/selectors'
+import { currentUser, more, keyWord, posts, postsCount, loading } from '../redux/selectors'
 import { updateHeader, updateFooter, loadPosts, updateKeyWord } from '../redux/actions'
 
-class PostList extends React.Component {
+class PostList extends Component {
   static propTypes = {
     boundUpdateHeader: PropTypes.func.isRequired,
     boundUpdateKeyWord: PropTypes.func.isRequired,
@@ -23,15 +15,19 @@ class PostList extends React.Component {
     postsCount: PropTypes.number.isRequired,
     loading: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired,
-    login: PropTypes.bool.isRequired,
+    currentUser: PropTypes.object.isRequired,
     more: PropTypes.bool.isRequired,
     posts: PropTypes.array.isRequired
   }
 
   constructor(props) {
     super(props)
-    props.boundUpdateHeader({
-      history: props.history,
+    this.state = {}
+  }
+
+  componentDidMount() {
+    this.props.boundUpdateHeader({
+      history: this.props.history,
       title: '全部文章',
       onAdd: () => this.onAdd()
     })
@@ -47,14 +43,14 @@ class PostList extends React.Component {
 
     this.state = {}
 
-    if (!props.postsCount) {
+    if (!this.props.postsCount) {
       this.onLoadMore()
     }
   }
 
   onAdd = () => {
-    const { history, login } = this.props
-    if (login) {
+    const { history, currentUser } = this.props
+    if (currentUser) {
       history.push('/edit')
     } else {
       this.onMy()
@@ -154,8 +150,7 @@ class PostList extends React.Component {
 
 export default connect(
   state => ({
-    currentUserName: currentUserName(state),
-    login: login(state),
+    currentUser: currentUser(state),
     more: more(state),
     keyWord: keyWord(state),
     posts: posts(state),

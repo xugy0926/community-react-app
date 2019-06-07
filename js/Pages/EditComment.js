@@ -4,42 +4,49 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { message, Button, Form, Input, Typography } from 'antd'
 
-import { login, currentUserName, currentUser, onePost } from '../redux/selectors'
+import { currentUser } from '../redux/selectors'
 import { updateHeader } from '../redux/actions'
 import Layout from '../Components/Layout'
 
+const Post = Parse.Object.extend('Post')
 const Comment = Parse.Object.extend('Comment')
 
 class EditComment extends React.Component {
   static propTypes = {
     boundUpdateHader: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
+    postId: PropTypes.string.isRequired,
     commentId: PropTypes.string,
-    post: PropTypes.object.isRequired,
-    currentUserName: PropTypes.string,
     currentUser: PropTypes.object.isRequired
   }
 
   static defaultProps = {
-    commentId: null,
-    currentUserName: ''
+    commentId: null
   }
 
   constructor(props) {
     super(props)
     this.state = {
+      post: null,
+      comment: null,
       content: ''
     }
 
-    this.comment = null
+    if (props.postId) {
+      const query = new Parse.Query(Post)
+      query.equalTo('objectId', props.postId)
+      query.first().then(post => {
+        this.setState({ post })
+      })
+    }
 
     if (props.commentId) {
       const query = new Parse.Query(Comment)
       query.equalTo('objectId', props.commentId)
 
       query.first().then(comment => {
-        this.comment = comment
         this.setState({
+          comment,
           content: comment.get('content')
         })
       })
@@ -52,28 +59,24 @@ class EditComment extends React.Component {
   }
 
   onSave = () => {
-    const { history, currentUser, currentUserName, post } = this.props
+    const { history, currentUser } = this.props
     const { content } = this.state
+
+    if (!currentUser) {
+      history.push('/my')
+      return
+    }
 
     if (!content || content.length < 3) {
       message.error('内容最少 3 个字')
       return
     }
 
-    const comment = this.comment || new Comment()
+    const comment = this.state.comment || new Comment()
     comment.set({
       content,
-      author: currentUser,
-      authorName: currentUserName,
-      parent: post
+      parent: this.state.post
     })
-
-    if (!comment.id) {
-      const roleACL = new Parse.ACL()
-      roleACL.setPublicReadAccess(true)
-      roleACL.setWriteAccess(currentUser, true)
-      comment.setACL(roleACL)
-    }
 
     comment
       .save()
@@ -88,8 +91,8 @@ class EditComment extends React.Component {
   }
 
   render() {
-    const { history, boundUpdateHader, post } = this.props
-    const { content } = this.state
+    const { history, boundUpdateHader } = this.props
+    const { post, content } = this.state
 
     boundUpdateHader({
       history,
@@ -131,10 +134,7 @@ export default connect(
   (state, ownProps) => {
     const { postId, commentId } = ownProps.match.params
     return {
-      login: login(state),
-      currentUserName: currentUserName(state),
       currentUser: currentUser(state),
-      post: onePost(state, postId),
       postId,
       commentId
     }

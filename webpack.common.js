@@ -23,17 +23,30 @@ module.exports = {
   resolve: { extensions: ['*', '.js', '.jsx'] },
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    publicPath: '/dist/',
-    filename: '[name].js',
-    chunkFilename: '[name].js'
+    publicPath: 'https://xugaoyang.com',
+    filename: '[name]-[hash].js',
+    chunkFilename: '[name]-[hash].js'
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    redux: 'Redux',
+    'react-redux': 'ReactRedux',
+    'react-router': 'ReactRouter',
+    'react-router-dom': 'ReactRouterDOM',
+    antd: 'antd',
+    parse: 'Parse',
+    ramda: 'R',
+    'react-markdown': 'ReactMarkdown',
+    'prop-types': 'PropTypes'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
-      {
-        from: './public/index.html',
-        to: './'
-      },
+      // {
+      //   from: './public/index.html',
+      //   to: './'
+      // },
       {
         from: './public/token.html',
         to: './'

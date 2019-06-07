@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Affix, PageHeader, Icon } from 'antd'
+import { Affix, Avatar, PageHeader, Icon } from 'antd'
 
 const styles = {
   main: {
@@ -12,6 +12,7 @@ class Header extends React.Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     title: PropTypes.string.isRequired,
+    currentUser: PropTypes.object.isRequired,
     onBack: PropTypes.func,
     onAdd: PropTypes.func
   }
@@ -22,23 +23,30 @@ class Header extends React.Component {
   }
 
   render() {
+    const { history, title, currentUser, onBack, onAdd } = this.props
+    const avatarSrc = currentUser && currentUser.get('avatar')
+
     return (
       <Affix offsetTop={0} style={{ marginBottom: '20px' }}>
         <PageHeader
           style={styles.main}
-          onBack={() => this.props.onBack()}
-          title={this.props.title}
+          onBack={() => onBack && onBack()}
+          title={title}
           extra={
             <div>
-              {this.props.onAdd ? (
+              {onAdd ? (
                 <Icon type="plus" style={{ marginRight: 20 }} onClick={() => this.props.onAdd()} />
               ) : null}
               <Icon
                 type="unordered-list"
                 style={{ marginRight: 20 }}
-                onClick={() => this.props.history.push('/projects')}
+                onClick={() => history.push('/projects')}
               />
-              <Icon type="user" onClick={() => this.props.history.push('/my')} />
+              {avatarSrc ? (
+                <Avatar size="small" src={avatarSrc} onClick={() => history.push('/my')} />
+              ) : (
+                <Icon type="user" onClick={() => history.push('/my')} />
+              )}
             </div>
           }
         />

@@ -3,22 +3,23 @@ import update from 'immutability-helper'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button, Message } from 'antd'
+import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button, message } from 'antd'
 
 import MarkdownBlock from '../Components/MarkdownBlock'
-import { currentUser, notes, oneProject } from '../redux/selectors'
-import { updateHeader, loadNotes, updateNote, deleteNote } from '../redux/actions'
+import { currentUser, notes } from '../redux/selectors'
+import { updateHeader, loadProject, loadNotes, updateNote, deleteNote } from '../redux/actions'
 
 class Todos extends React.Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
     boundUpdateHeader: PropTypes.func.isRequired,
+    boundLoadProject: PropTypes.func.isRequired,
     boundLoadNotes: PropTypes.func.isRequired,
     boundUpdateNote: PropTypes.func.isRequired,
     boundDeleteNote: PropTypes.func.isRequired,
     currentUser: PropTypes.object.isRequired,
-    notes: PropTypes.array.isRequired,
-    project: PropTypes.object.isRequired
+    projectId: PropTypes.string.isRequired,
+    notes: PropTypes.array.isRequired
   }
 
   state = {
@@ -92,19 +93,23 @@ class Todos extends React.Component {
           }
         ]
       }
-    ]
+    ],
+    project: null
   }
 
   componentDidMount() {
-    this.props.boundUpdateHeader({
-      history: this.props.history,
-      title: `${this.props.project && this.props.project.get('title')} - Todo`,
-      onBack: () => this.props.history.push('/projects')
-    })
-
-    if (this.props.notes.length < 1) {
-      this.props.boundLoadNotes(this.props.project)
-    }
+    const { history, boundLoadProject, boundUpdateHeader, projectId } = this.props
+    boundLoadProject(projectId)
+      .then(project => {
+        boundUpdateHeader({
+          history,
+          title: `${project.get('title')} - Todo`,
+          onBack: () => history.push('/projects')
+        })
+        this.setState({ project })
+        return this.props.boundLoadNotes(project)
+      })
+      .catch(err => message.error(err.message))
   }
 
   columnsMenus = () => (
@@ -165,7 +170,7 @@ class Todos extends React.Component {
     const Note = Parse.Object.extend('Note')
     const createNote = new Note({
       type: this.state.columns[index].type,
-      parent: this.props.project
+      parent: this.state.project
     })
     this.setState(state => ({
       columns: update(state.columns, { [index]: { createNote: { $set: createNote } } })
@@ -173,6 +178,7 @@ class Todos extends React.Component {
   }
 
   onEditeNote = index => {
+    console.log(this.state.columns[index].editNote.get('content'))
     this.props.boundUpdateNote(this.state.columns[index].editNote)
   }
 
@@ -211,7 +217,7 @@ class Todos extends React.Component {
                   <Card size="small">
                     <Form>
                       <Input.TextArea
-                        row={2}
+                        rows={4}
                         value={
                           (this.state.columns[index].createNote &&
                             this.state.columns[index].createNote.get('content')) ||
@@ -259,7 +265,7 @@ class Todos extends React.Component {
                 {todoList[index].map(element => (
                   <Card size="small" key={element.id} style={{ borderRadius: 6, marginTop: 10 }}>
                     <Col span={22}>
-                      <MarkdownBlock content={element.get('content')} />
+                      <MarkdownBlock theme="todo-body" content={element.get('content')} />
                     </Col>
                     <Col span={2}>
                       <Dropdown overlay={() => this.noteMenus(index, element)}>
@@ -294,7 +300,7 @@ class Todos extends React.Component {
               >
                 <Form>
                   <Input.TextArea
-                    row={8}
+                    rows={15}
                     value={
                       (this.state.columns[index].editNote &&
                         this.state.columns[index].editNote.get('content')) ||
@@ -323,8 +329,8 @@ class Todos extends React.Component {
                 Parse.Cloud.run('dailyReport', {
                   email: this.props.currentUser.get('email')
                 })
-                  .then(Message.success)
-                  .catch(Message.error)
+                  .then(message.success)
+                  .catch(message.error)
               }}
             >
               发邮件
@@ -341,12 +347,13 @@ export default connect(
     const { projectId } = ownProps.match.params
     return {
       currentUser: currentUser(state),
-      notes: notes(state),
-      project: oneProject(state, projectId)
+      notes: notes(state, projectId),
+      projectId
     }
   },
   dispatch => ({
     boundUpdateHeader: header => dispatch(updateHeader(header)),
+    boundLoadProject: id => dispatch(loadProject(id)),
     boundLoadNotes: project => dispatch(loadNotes(project)),
     boundDeleteNote: note => dispatch(deleteNote(note)),
     boundUpdateNote: note => dispatch(updateNote(note))
