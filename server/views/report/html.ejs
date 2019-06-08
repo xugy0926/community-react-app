@@ -5,22 +5,39 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><%= appName %> report</title>
 <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="styles.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 
 <body itemscope itemtype="http://schema.org/EmailMessage">
-<div class="container">
+<div class="container mt-5 mb-5">
 	<div class="row">
-	<% projects.forEach(item => { %>
+	  <div class="col-sm-12">
 		<div class="card-body">
-			<h3 class="card-title"><%= item.title %></h3>
-			<% item.children.forEach(child => {%>
-				<span class="badge badge-pill badge-primary"><%= child.type %></span>
-				<div class="card-text">
-				<%- child.content %>
-				</div>
-			<% })%>	
+		  <h5 class="card-title"><%= report.title %></h5>
+		  <p class="card-text">时间: <%= report.time %></p>
 		</div>
-	<% })%>
+		<% Object.keys(report.projects).forEach(projectKey => { 
+			const project = report.projects[projectKey]
+	    %>
+		<div class="card mt-5">
+			<div class="card-header">
+			<%= project.title %>
+			</div>
+			<div class="card-body">
+			<% Object.keys(project.notes).forEach(noteKey => {
+				const notes = project.notes[noteKey]
+		    %>	
+				<h4><%= noteKey %></h4>
+				<% notes.forEach(note => { %>
+				<div class="card-text">
+				<%- note.content %>
+				</div>
+				<% })%>	
+			<% })%>	
+			</div>
+		</div>
+		<% })%>
+	  </div>
 	</div>
 </div>
 </body>

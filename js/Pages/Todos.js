@@ -3,7 +3,20 @@ import update from 'immutability-helper'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, Button, message } from 'antd'
+import {
+  Card,
+  Col,
+  Row,
+  Icon,
+  Menu,
+  Dropdown,
+  Input,
+  Modal,
+  Form,
+  Button,
+  Tag,
+  message
+} from 'antd'
 
 import MarkdownBlock from '../Components/MarkdownBlock'
 import { currentUser, notes } from '../redux/selectors'
@@ -99,6 +112,7 @@ class Todos extends React.Component {
 
   componentDidMount() {
     const { history, boundLoadProject, boundUpdateHeader, projectId } = this.props
+
     boundLoadProject(projectId)
       .then(project => {
         boundUpdateHeader({
@@ -178,7 +192,6 @@ class Todos extends React.Component {
   }
 
   onEditeNote = index => {
-    console.log(this.state.columns[index].editNote.get('content'))
     this.props.boundUpdateNote(this.state.columns[index].editNote)
   }
 
@@ -265,6 +278,19 @@ class Todos extends React.Component {
                 {todoList[index].map(element => (
                   <Card size="small" key={element.id} style={{ borderRadius: 6, marginTop: 10 }}>
                     <Col span={22}>
+                      <div>
+                        <Tag color="magenta">magenta</Tag>
+                        <Tag color="red">red</Tag>
+                        <Tag color="volcano">volcano</Tag>
+                        <Tag color="orange">orange</Tag>
+                        <Tag color="gold">gold</Tag>
+                        <Tag color="lime">lime</Tag>
+                        <Tag color="green">green</Tag>
+                        <Tag color="cyan">cyan</Tag>
+                        <Tag color="blue">blue</Tag>
+                        <Tag color="geekblue">geekblue</Tag>
+                        <Tag color="purple">purple</Tag>
+                      </div>
                       <MarkdownBlock theme="todo-body" content={element.get('content')} />
                     </Col>
                     <Col span={2}>
@@ -323,19 +349,6 @@ class Todos extends React.Component {
               </Modal>
             </Col>
           ))}
-          <Col span={6}>
-            <Button
-              onClick={() => {
-                Parse.Cloud.run('dailyReport', {
-                  email: this.props.currentUser.get('email')
-                })
-                  .then(message.success)
-                  .catch(message.error)
-              }}
-            >
-              发邮件
-            </Button>
-          </Col>
         </Row>
       </React.Fragment>
     )

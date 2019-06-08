@@ -15,7 +15,7 @@ module.exports = {
   serverURL: process.env.SERVER_URL || 'http://localhost:1337/parse',
   email: {
     fromAddress: '',
-    user: '',
+    user: 'm',
     password: '',
     host: '',
     port: 465

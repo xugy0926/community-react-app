@@ -1,3 +1,2 @@
-Parse.Cloud.job('test', request => {
-  console.log(request)
-})
+require('./dailyReport')
+require('./sendMail')

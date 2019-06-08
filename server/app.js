@@ -6,6 +6,7 @@ const ejsMate = require('ejs-mate')
 const { ParseServer } = require('parse-server')
 const ParseDashboard = require('parse-dashboard')
 
+const { start } = require('./timer')
 const github = require('./github')
 
 const api = new ParseServer(config.get('parse'))
@@ -31,3 +32,5 @@ app.use(config.get('dashboardPath'), dashboard)
 
 httpServer.listen(config.get('port'))
 ParseServer.createLiveQueryServer(httpServer)
+
+start(app)

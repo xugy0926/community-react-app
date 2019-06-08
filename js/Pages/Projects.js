@@ -3,10 +3,26 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { Card, Col, Row, Icon, Menu, Dropdown, Input, Modal, Form, List, message } from 'antd'
+import {
+  Card,
+  Col,
+  Button,
+  Row,
+  Icon,
+  Menu,
+  Dropdown,
+  Input,
+  Modal,
+  Form,
+  List,
+  message
+} from 'antd'
 
-import { projects } from '../redux/selectors'
+import { currentUser, projects } from '../redux/selectors'
 import { updateHeader, loadProjects, updateProject, deleteProject } from '../redux/actions'
+
+const Plan = Parse.Object.extend('Plan')
+const queryPlan = new Parse.Query(Plan)
 
 class Projects extends React.Component {
   static propTypes = {
@@ -15,6 +31,7 @@ class Projects extends React.Component {
     boundUpdateProject: PropTypes.func.isRequired,
     boundDeleteProject: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
+    currentUser: PropTypes.object.isRequired,
     projects: PropTypes.array.isRequired
   }
 
@@ -25,15 +42,56 @@ class Projects extends React.Component {
       title: 'Projects',
       onBack: () => props.history.push('/')
     })
-
-    if (props.projects.length < 1) {
-      props.boundLoadProjects()
-    }
   }
 
   state = {
+    todoPlan: false,
     editProject: null,
     visible: false
+  }
+
+  componentDidMount() {
+    this.load(this.props.currentUser)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.currentUser !== nextProps.currentUser) {
+      this.load(nextProps.currentUser)
+    }
+  }
+
+  load = currentUser => {
+    if (currentUser) {
+      queryPlan.equalTo('action', 'todo')
+      queryPlan.equalTo('author', currentUser)
+      queryPlan
+        .first()
+        .then(this.loadProjects)
+        .catch(err => message.error(err.message))
+    }
+  }
+
+  joinTodoPlan = () => {
+    queryPlan.equalTo('action', 'todo')
+    queryPlan.equalTo('author', this.props.currentUser)
+    queryPlan
+      .first()
+      .then(plan => {
+        plan = plan || new Plan()
+        return plan.save({ action: 'todo', author_email: this.props.currentUser.get('email') })
+      })
+      .then(this.loadProjects)
+      .catch(err => message.error(err.message))
+  }
+
+  loadProjects = plan => {
+    const action = plan && plan.get('action')
+    if (action === 'todo') {
+      this.setState({ todoPlan: true })
+      if (this.props.projects.length < 1) return this.props.boundLoadProjects()
+    }
+
+    return Promise.resolve()
   }
 
   projectMenus = editProject => (
@@ -76,6 +134,16 @@ class Projects extends React.Component {
   }
 
   render() {
+    if (!this.state.todoPlan) {
+      return (
+        <Card align="center">
+          <Button type="primary" onClick={this.joinTodoPlan}>
+            参加 Todo 计划
+          </Button>
+        </Card>
+      )
+    }
+
     return (
       <React.Fragment>
         <Row>
@@ -144,6 +212,7 @@ class Projects extends React.Component {
 
 export default connect(
   state => ({
+    currentUser: currentUser(state),
     projects: projects(state)
   }),
   dispatch => ({

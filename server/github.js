@@ -30,7 +30,7 @@ const restrictedAcl = new Parse.ACL()
 restrictedAcl.setPublicReadAccess(false)
 restrictedAcl.setPublicWriteAccess(false)
 
-const newGitHubUser = function(profile) {
+const newGitHubUser = profile => {
   const user = new Parse.User()
   user.set('username', profile.name)
   user.set('email', profile.email)
@@ -51,7 +51,7 @@ const newGitHubUser = function(profile) {
     .then(() => upsertGitHubUser(profile))
 }
 
-const upsertGitHubUser = function(profile) {
+const upsertGitHubUser = profile => {
   const query = new Parse.Query(TokenStorage)
   query.equalTo('githubId', profile.id && profile.id.toString())
   query.ascending('createdAt')
@@ -81,7 +81,7 @@ const upsertGitHubUser = function(profile) {
   })
 }
 
-const callback = function(req, res) {
+const callback = (req, res) => {
   const profile = req.user && req.user._json
   profile.accessToken = req.user.accessToken
 
