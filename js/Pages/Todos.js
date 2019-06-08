@@ -278,19 +278,6 @@ class Todos extends React.Component {
                 {todoList[index].map(element => (
                   <Card size="small" key={element.id} style={{ borderRadius: 6, marginTop: 10 }}>
                     <Col span={22}>
-                      <div>
-                        <Tag color="magenta">magenta</Tag>
-                        <Tag color="red">red</Tag>
-                        <Tag color="volcano">volcano</Tag>
-                        <Tag color="orange">orange</Tag>
-                        <Tag color="gold">gold</Tag>
-                        <Tag color="lime">lime</Tag>
-                        <Tag color="green">green</Tag>
-                        <Tag color="cyan">cyan</Tag>
-                        <Tag color="blue">blue</Tag>
-                        <Tag color="geekblue">geekblue</Tag>
-                        <Tag color="purple">purple</Tag>
-                      </div>
                       <MarkdownBlock theme="todo-body" content={element.get('content')} />
                     </Col>
                     <Col span={2}>
