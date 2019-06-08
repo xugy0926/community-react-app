@@ -5,7 +5,7 @@ const { interval } = Rx.Observable
 
 const report = () => {
   interval(1000 * 60 * 60).subscribe(() => {
-    if (moment().hours() === 18) {
+    if (moment().hours() === 2) {
       const Plan = Parse.Object.extend('Plan')
       const queryPlan = new Parse.Query(Plan)
       queryPlan.find(null, { useMasterKey: true }).then(plans => {
