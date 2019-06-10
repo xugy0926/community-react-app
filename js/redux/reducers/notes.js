@@ -9,17 +9,17 @@ const initialState = {
 
 const assign = oldObj => newObj => Object.assign({}, oldObj, newObj)
 
-export default function(state = initialState, action) {
-  switch (action.type) {
+export default function(state = initialState, { type, payload }) {
+  switch (type) {
     case INIT_NOTES: {
       return { ...initialState }
     }
     case LOAD_NOTES: {
-      const { notes, projectId } = action.payload
+      const { notes, projectId } = payload
       return assign(state)({ notes: [...state.notes, ...notes], projectId })
     }
     case UPDATE_NOTE: {
-      const { note } = action.payload
+      const { note } = payload
       const has = !!R.find(R.propEq('id', note.id), state.notes)
 
       if (has) {
@@ -29,7 +29,7 @@ export default function(state = initialState, action) {
       return assign(state)({ notes: [note, ...state.notes] })
     }
     case DELETE_NOTE: {
-      const { note } = action.payload
+      const { note } = payload
       const notes = R.filter(item => item.id !== note.id, state.notes)
 
       return assign(state)({ notes: [...notes] })

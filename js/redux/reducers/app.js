@@ -1,4 +1,12 @@
-import { UPDATE_HEADER, UPDATE_FOOTER, UPDATE_CURRENT_USER } from '../actionTypes'
+import {
+  LOAD_REQUEST,
+  LOAD_SUCCESS,
+  LOAD_FAILURE,
+  UPDATE_LOADING,
+  UPDATE_HEADER,
+  UPDATE_FOOTER,
+  UPDATE_CURRENT_USER
+} from '../actionTypes'
 
 const initialState = {
   header: {
@@ -12,30 +20,36 @@ const initialState = {
     onFavorite: null,
     onMy: null
   },
-  user: null
+  user: null,
+  loading: false
 }
 
-export default function(state = initialState, action) {
-  switch (action.type) {
+const assign = oldObj => newObj => Object.assign({}, oldObj, newObj)
+
+export default function(state = initialState, { type, payload }) {
+  switch (type) {
+    case LOAD_REQUEST: {
+      return assign(state)({ loading: true })
+    }
+    case LOAD_SUCCESS: {
+      return assign(state)({ loading: false })
+    }
+    case LOAD_FAILURE: {
+      return assign(state)({ loading: false })
+    }
+    case UPDATE_LOADING: {
+      const { loading } = payload
+      return assign(state)({ loading })
+    }
     case UPDATE_HEADER: {
-      return Object.assign(
-        {},
-        state,
-        { header: initialState.header },
-        { header: { ...action.payload } }
-      )
+      return assign(state)(assign({ header: initialState.header })({ header: { ...payload } }))
     }
     case UPDATE_FOOTER: {
-      return Object.assign(
-        {},
-        state,
-        { footer: initialState.footer },
-        { footer: { ...action.payload } }
-      )
+      return assign(state)(assign({ footer: initialState.footer })({ footer: { ...payload } }))
     }
     case UPDATE_CURRENT_USER: {
-      const { user } = action.payload
-      return Object.assign({}, state, { user })
+      const { user } = payload
+      return assign(state)({ user })
     }
     default:
       return state

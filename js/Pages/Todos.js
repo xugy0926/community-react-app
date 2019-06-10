@@ -3,23 +3,10 @@ import update from 'immutability-helper'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import {
-  Card,
-  Col,
-  Row,
-  Icon,
-  Menu,
-  Dropdown,
-  Input,
-  Modal,
-  Form,
-  Button,
-  Tag,
-  message
-} from 'antd'
+import { Card, Col, Row, Icon, Menu, Input, Modal, Form, Button, message } from 'antd'
 
-import MarkdownBlock from '../Components/MarkdownBlock'
-import { currentUser, notes } from '../redux/selectors'
+import Todo from '../Components/Todo'
+import { notes } from '../redux/selectors'
 import { updateHeader, loadProject, loadNotes, updateNote, deleteNote } from '../redux/actions'
 
 class Todos extends React.Component {
@@ -30,7 +17,6 @@ class Todos extends React.Component {
     boundLoadNotes: PropTypes.func.isRequired,
     boundUpdateNote: PropTypes.func.isRequired,
     boundDeleteNote: PropTypes.func.isRequired,
-    currentUser: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     notes: PropTypes.array.isRequired
   }
@@ -57,6 +43,13 @@ class Todos extends React.Component {
               note.set('type', 'done')
               this.props.boundUpdateNote(note)
             }
+          },
+          {
+            label: 'Move to achive',
+            action: note => {
+              note.set('type', 'achive')
+              this.props.boundUpdateNote(note)
+            }
           }
         ]
       },
@@ -80,6 +73,13 @@ class Todos extends React.Component {
               note.set('type', 'done')
               this.props.boundUpdateNote(note)
             }
+          },
+          {
+            label: 'Move to achive',
+            action: note => {
+              note.set('type', 'achive')
+              this.props.boundUpdateNote(note)
+            }
           }
         ]
       },
@@ -101,6 +101,13 @@ class Todos extends React.Component {
             label: 'Move to inprogress',
             action: note => {
               note.set('type', 'inprogress')
+              this.props.boundUpdateNote(note)
+            }
+          },
+          {
+            label: 'Move to achive',
+            action: note => {
+              note.set('type', 'achive')
               this.props.boundUpdateNote(note)
             }
           }
@@ -147,12 +154,9 @@ class Todos extends React.Component {
 
   noteMenus = (index, note) => (
     <Menu>
-      <Menu.Item onClick={() => this.state.columns[index].actions[0].action(note)}>
-        {this.state.columns[index].actions[0].label}
-      </Menu.Item>
-      <Menu.Item onClick={() => this.state.columns[index].actions[1].action(note)}>
-        {this.state.columns[index].actions[1].label}
-      </Menu.Item>
+      {this.state.columns[index].actions.map(item => (
+        <Menu.Item onClick={() => item.action(note)}>{item.label}</Menu.Item>
+      ))}
       <Menu.Item
         onClick={() => {
           this.setState(state => ({
@@ -204,7 +208,7 @@ class Todos extends React.Component {
         todoList[0].push(element)
       } else if (type === 'inprogress') {
         todoList[1].push(element)
-      } else if (element) {
+      } else if (type === 'done') {
         todoList[2].push(element)
       }
     })
@@ -276,16 +280,12 @@ class Todos extends React.Component {
                   </Card>
                 ) : null}
                 {todoList[index].map(element => (
-                  <Card size="small" key={element.id} style={{ borderRadius: 6, marginTop: 10 }}>
-                    <Col span={22}>
-                      <MarkdownBlock theme="todo-body" content={element.get('content')} />
-                    </Col>
-                    <Col span={2}>
-                      <Dropdown overlay={() => this.noteMenus(index, element)}>
-                        <Icon type="ellipsis" />
-                      </Dropdown>
-                    </Col>
-                  </Card>
+                  <Todo
+                    key={element.id}
+                    id={element.id}
+                    content={element.get('content')}
+                    menus={() => this.noteMenus(index, element)}
+                  />
                 ))}
               </Card>
               <Modal
@@ -346,7 +346,6 @@ export default connect(
   (state, ownProps) => {
     const { projectId } = ownProps.match.params
     return {
-      currentUser: currentUser(state),
       notes: notes(state, projectId),
       projectId
     }

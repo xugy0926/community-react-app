@@ -1,30 +1,23 @@
-import {
-  LOAD_POSTS,
-  UPDATE_POST,
-  UPDATE_MORE,
-  UPDATE_KEY_WORD,
-  UPDATE_LOADING
-} from '../actionTypes'
+import { LOAD_POSTS, UPDATE_POST, UPDATE_MORE, UPDATE_KEY_WORD } from '../actionTypes'
 
 const R = require('ramda')
 
 const initialState = {
   posts: [],
   more: true,
-  keyWord: '',
-  loading: false
+  keyWord: ''
 }
 
 const assign = oldObj => newObj => Object.assign({}, oldObj, newObj)
 
-export default function(state = initialState, action) {
-  switch (action.type) {
+export default function(state = initialState, { type, payload }) {
+  switch (type) {
     case LOAD_POSTS: {
-      const { posts } = action.payload
-      return assign(state)({ posts: [...state.posts, ...posts] })
+      const { data } = payload
+      return assign(state)({ posts: [...state.posts, ...data] })
     }
     case UPDATE_POST: {
-      const { post } = action.payload
+      const { post } = payload
       const has = !!R.find(R.propEq('id', post.id), state.posts)
 
       if (has) {
@@ -34,16 +27,12 @@ export default function(state = initialState, action) {
       return assign(state)({ posts: [post, ...state.posts] })
     }
     case UPDATE_MORE: {
-      const { more } = action.payload
+      const { more } = payload
       return assign(state)({ more })
     }
     case UPDATE_KEY_WORD: {
-      const { keyWord } = action.payload
+      const { keyWord } = payload
       return assign(initialState)({ keyWord })
-    }
-    case UPDATE_LOADING: {
-      const { loading } = action.payload
-      return assign(state)({ loading })
     }
     default:
       return state

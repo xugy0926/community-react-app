@@ -69,12 +69,7 @@ class PostList extends Component {
 
   onLoadMore = () => {
     const { boundLoadPosts, loading } = this.props
-
-    if (loading) {
-      return
-    }
-
-    boundLoadPosts()
+    if (!loading) boundLoadPosts()
   }
 
   onListItem = item => {

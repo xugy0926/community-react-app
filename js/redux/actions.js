@@ -1,6 +1,9 @@
 import Parse from 'parse'
 import { message } from 'antd'
 import {
+  LOAD_REQUEST,
+  LOAD_SUCCESS,
+  LOAD_FAILURE,
   UPDATE_HEADER,
   UPDATE_FOOTER,
   UPDATE_CURRENT_USER,
@@ -138,17 +141,12 @@ export const loadPosts = () => (dispatch, getState) => {
 
   postQuery.skip(posts.posts.length)
   postQuery.matches('title', posts.keyWord)
-  dispatch(updateLoading(true))
-  return postQuery
-    .find()
-    .then(posts => {
-      dispatch({ type: UPDATE_MORE, payload: { more: posts.length > 0 } })
-      dispatch({ type: LOAD_POSTS, payload: { posts } })
-    })
-    .catch(handleError)
-    .finally(() => {
-      dispatch(updateLoading(false))
-    })
+
+  dispatch({
+    types: [LOAD_POSTS, LOAD_REQUEST, LOAD_SUCCESS, LOAD_FAILURE],
+    callAPI: () => postQuery.find(),
+    payload: {}
+  })
 }
 
 export const loadPost = id => (dispatch, getState) => {
@@ -216,6 +214,7 @@ export const loadNotes = project => (dispatch, getState) => {
   }
 
   noteQuery.equalTo('parent', project)
+  noteQuery.notEqualTo('type', 'achive')
   return noteQuery
     .find()
     .then(notes => {
