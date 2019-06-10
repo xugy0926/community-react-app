@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><%= appName %> report</title>
 <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-<link href="styles.css" media="all" rel="stylesheet" type="text/css" />
+<link href="style.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 
 <body itemscope itemtype="http://schema.org/EmailMessage">
@@ -18,7 +18,7 @@
 		</div>
 		<% Object.keys(report.projects).forEach(projectKey => { 
 			const project = report.projects[projectKey]
-	    %>
+	  %>
 		<div class="card mt-5">
 			<div class="card-header">
 			<%= project.title %>
@@ -26,12 +26,14 @@
 			<div class="card-body">
 			<% Object.keys(project.notes).forEach(noteKey => {
 				const notes = project.notes[noteKey]
-		    %>	
-				<h4><%= noteKey %></h4>
+		  %>	
+				<h4 style="border-left: 5px solid #dc3545;padding-left: 15px"><%= noteKey %></h4>
 				<% notes.forEach(note => { %>
-				<div class="card-text">
-				<%- note.content %>
-				</div>
+					<div class="card-body" style="background-color: #f8f9fa;margin-top: 5px;margin-bottom: 5px">
+						<div class="card-text">
+							<%- note.content %>
+							</div>
+					</div>
 				<% })%>	
 			<% })%>	
 			</div>

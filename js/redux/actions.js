@@ -54,7 +54,7 @@ export const signup = (username, email, password) => {
   }))
 }
 
-export const signinWithAccount = (password, email) =>
+export const signinWithAccount = (email, password) =>
   Parse.User.logIn(email, password).then(user => ({
     type: UPDATE_CURRENT_USER,
     payload: {

@@ -32,6 +32,8 @@ Parse.Cloud.job('dailyReport', async request => {
 
     // find notes
     queryNote.equalTo('author', user)
+    queryNote.descending('type')
+    queryNote.notContainedIn('type', ['achive'])
     const notes = await queryNote.find({ useMasterKey: true })
 
     if (notes.length < 1) {
