@@ -27,7 +27,7 @@
     "nodemailer": "^6.2.1",
     "parse": "^2.1.0",
     "parse-dashboard": "^1.2.0",
-    "parse-server": "^3.1.1",
+    "parse-server": "^4.3.0",
     "passport": "^0.4.0",
     "passport-github": "^1.1.0",
     "randomatic": "^3.1.1",
