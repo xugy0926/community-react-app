@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "ejs": "^2.6.1",
     "ejs-mate": "^3.0.0",
-    "express-fileupload": "^0.4.0",
+    "express-fileupload": "^1.1.9",
     "marked": "^0.6.2",
     "moment": "^2.24.0",
     "mongoose": "^5.4.0",
