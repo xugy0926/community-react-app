@@ -20,7 +20,7 @@
     "ejs": "^2.6.1",
     "ejs-mate": "^3.0.0",
     "express-fileupload": "^0.4.0",
-    "marked": "^0.6.2",
+    "marked": "^1.1.1",
     "moment": "^2.24.0",
     "mongoose": "^5.4.0",
     "nanoid": "^2.0.3",
